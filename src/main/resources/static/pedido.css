@@ -1,0 +1,88 @@
+.pedido-dialog{width:min(980px,calc(100% - 40px));max-height:calc(100dvh - 40px);padding:0;border:1px solid var(--line);border-radius:14px;color:var(--ink);background:#fff;box-shadow:0 28px 100px #211b1738;overflow:hidden}
+.pedido-dialog[open]{display:flex;flex-direction:column}
+.pedido-dialog::backdrop{background:#28221b61;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.pedido-dialog-header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding:28px 32px 24px;border-bottom:1px solid var(--line);flex:none}
+.pedido-dialog-header .eyebrow{font-size:11px;letter-spacing:.08em}
+.pedido-dialog-header h2{font:500 clamp(28px,3vw,38px)/1.16 var(--serif);margin:10px 0}
+.pedido-dialog-header p{font-size:13px;color:var(--muted);margin:0;line-height:1.5}
+.pedido-dialog-header>.icon-btn{flex:none;margin:-6px -6px 0 0}
+.pedido-dialog-body{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);overflow-y:auto;overscroll-behavior:contain;scroll-padding:24px;min-height:0}
+.pedido-summary{padding:28px 32px;min-width:0}
+.pedido-status{display:inline-block;background:#f4eee4;color:#77552e;border:1px solid #dfcbb4;border-radius:24px;padding:6px 12px;font-size:12px}
+.pedido-status.is-paid{background:#edf4ed;color:#335e3f;border-color:#c0d2c1}
+.pedido-total{display:grid;gap:6px;padding:24px 0;border-bottom:1px solid var(--line)}
+.pedido-total>span{font-size:13px;color:var(--muted)}
+.pedido-total>strong{font:500 38px/1.2 var(--serif);font-variant-numeric:tabular-nums}
+.pedido-total small{font-size:12px;color:var(--muted);line-height:1.5}
+.pedido-summary h3{font-size:15px;font-weight:600;margin:24px 0 8px}
+.pedido-items{list-style:none;margin:0;padding:0}
+.pedido-items li{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;border-bottom:1px solid var(--line);padding:16px 0}
+.pedido-items li>div{min-width:0;overflow-wrap:anywhere}
+.pedido-items b{font-weight:500;font-size:14px;display:block;line-height:1.5}
+.pedido-items span{font-size:12px;color:var(--muted);display:block;margin-top:5px;line-height:1.6}
+.pedido-items strong{font-size:14px;font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pedido-delivery{margin:24px 0;font-size:13px;line-height:1.6}
+.pedido-delivery dt{color:var(--muted);margin-top:12px}
+.pedido-delivery dd{margin:3px 0 0;overflow-wrap:anywhere}
+.pedido-documents{display:grid;gap:12px;margin-top:20px}
+.pedido-documents button,.pedido-documents .button{justify-content:center;border-radius:5px;font-size:13px;min-height:46px;padding:12px 16px;white-space:normal;text-align:center;line-height:1.5}
+.pedido-documents>p{margin:0;font-size:12px;line-height:1.6;color:var(--muted)}
+.pedido-documents .form-error{color:var(--error)}
+#pedido-download-error:empty{display:none}
+.pedido-payment{padding:30px 28px;background:#faf7f3;border-left:1px solid var(--line);min-width:0;text-align:center}
+.payment-method-label{display:inline-block;font-size:12px;font-weight:500;color:var(--rose);margin-bottom:12px}
+.pedido-payment h3{font:500 28px/1.2 var(--serif);margin:0 0 14px}
+.qr-instruction{font-size:13px;line-height:1.6;color:var(--muted);margin:0 auto 20px;max-width:35ch}
+.payment-qr-frame{max-width:252px;margin:0 auto;background:#fff;border:1px solid var(--line);padding:12px;border-radius:10px}
+.payment-qr-frame img{display:block;width:100%;height:auto;object-fit:contain}
+.download-qr{display:inline-flex;align-items:center;min-height:44px;font-size:13px;text-decoration:underline;text-underline-offset:4px;margin:8px 0 12px}
+.payment-deadline,.payment-confirmed-note{font-size:12px;line-height:1.7;margin:16px auto 0;padding:16px;text-align:left;max-width:42ch;border-radius:6px;background:#efe7db;color:#65513c}
+.payment-confirmed-note{background:#edf4ed;color:#335e3f}
+.bank-account{padding:24px 20px;background:#fff;border:1px solid var(--line);border-radius:8px;text-align:left;margin:24px 0 16px}
+.bank-account>span{display:block;font-size:12px;color:var(--muted);margin:0 0 8px}
+.bank-account>strong{display:block;font-size:14px;line-height:1.65;font-weight:500;overflow-wrap:anywhere;margin-bottom:28px}
+.bank-cci{font-size:clamp(19px,2vw,24px);line-height:1.55;font-weight:500;font-variant-numeric:tabular-nums;margin:0 0 12px;user-select:all;overflow-wrap:anywhere}
+.copy-cci{min-height:44px;padding:8px 14px;border:1px solid var(--border);background:#fff;border-radius:5px;font-size:13px;color:var(--ink)}
+#copy-cci-status{font-size:12px;color:#335e3f;min-height:18px;margin:8px 0 0}
+.payment-demo-note{font-size:12px;line-height:1.6;color:var(--error);margin:12px 0;text-align:left}
+.pedido-dialog-footer{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:18px 32px;border-top:1px solid var(--line);background:#fff;flex:none}
+.pedido-dialog-footer button{font-size:13px;min-height:44px;padding:11px 16px;border-radius:5px;justify-content:center}
+#pedido-live{font-size:12px;line-height:1.5;color:var(--muted);margin:0 auto 0 0;max-width:35ch}
+#pedido-live:empty{display:none}
+.account-order-detail-button{display:inline-flex;align-items:center;gap:12px;min-height:44px;padding:8px 0;background:none;border:0;text-decoration:underline;text-underline-offset:4px;font-size:14px;color:var(--ink)}
+@media(max-width:760px){
+ .pedido-dialog{width:calc(100% - 24px);max-height:calc(100dvh - 24px);border-radius:10px}
+ .pedido-dialog-header{padding:22px 20px 20px;gap:12px}.pedido-dialog-header h2{font-size:29px}.pedido-dialog-header p{font-size:12px}
+ .pedido-dialog-body{grid-template-columns:1fr}.pedido-summary{padding:24px 20px}.pedido-payment{border-left:0;border-top:1px solid var(--line);padding:28px 20px}
+ .pedido-payment h3{font-size:27px}.payment-qr-frame{max-width:240px}.pedido-total{padding:20px 0}.pedido-total>strong{font-size:34px}
+ .pedido-dialog-footer{padding:14px 16px;gap:10px;flex-wrap:wrap}.pedido-dialog-footer button{flex:1;min-width:0;padding:10px 8px;font-size:12px}
+ #pedido-live{flex-basis:100%;max-width:none;font-size:12px}.bank-account{padding:20px}.bank-cci{font-size:23px}
+}
+@media(max-height:500px){.pedido-dialog-header{padding-block:16px}.pedido-dialog-header h2{font-size:26px}.pedido-dialog-footer{padding-block:12px}}
+.pedido-summary{grid-column:1;grid-row:1}.pedido-payment{grid-column:2;grid-row:1}
+.payment-amount{font:500 32px/1.2 var(--serif);font-variant-numeric:tabular-nums;margin:0 0 16px;color:var(--ink)}
+@media(max-width:760px){.pedido-summary{grid-column:1;grid-row:2}.pedido-payment{grid-column:1;grid-row:1}.payment-amount{font-size:30px}}
+@media(max-width:400px){.payment-qr-frame{max-width:220px}.pedido-dialog-header{padding:20px 16px 16px}.pedido-payment{padding:24px 16px}.pedido-payment h3{font-size:25px}}
+.pedido-dialog .export-button{background:#fff;border:1px solid var(--border);color:var(--ink);cursor:pointer}
+
+/* Escritorio: contenido fijo, con vistas y paginación de piezas. Móvil conserva desplazamiento y QR primero. */
+.pedido-details-tabs{display:none}.pedido-item-pagination[hidden]{display:none}
+@media(min-width:901px){
+ .pedido-dialog{width:min(1040px,calc(100% - 32px));height:min(780px,calc(100dvh - 32px));max-height:calc(100dvh - 32px)}
+ .pedido-dialog-header{padding:18px 24px 16px;gap:16px}.pedido-dialog-header h2{font-size:30px;margin:6px 0}.pedido-dialog-header .eyebrow{font-size:10px}
+ .pedido-dialog-body{overflow:hidden;flex:1;grid-template-columns:1.1fr 1fr}
+ .pedido-summary{padding:20px 24px;overflow:hidden}.pedido-total{padding:14px 0;gap:4px}.pedido-total>strong{font-size:32px}
+ .pedido-details-tabs{display:flex;gap:8px;border-bottom:1px solid var(--line);margin-top:16px}.pedido-details-tabs button{min-height:44px;padding:8px 10px;background:none;border:0;border-bottom:2px solid transparent;color:#6d655f;font-size:13px;cursor:pointer}.pedido-details-tabs button[aria-selected=true]{border-bottom-color:#865c48;color:var(--ink);font-weight:600}
+ .pedido-detail-panel.is-inactive{display:none}.pedido-mobile-heading{display:none}.pedido-items li{padding:12px 0}.pedido-items b{font-size:14px}.pedido-items span{margin-top:3px;font-size:12px}
+ .pedido-item-pagination{display:flex;align-items:center;justify-content:center;gap:20px;margin-top:12px;font-size:12px}.pedido-item-pagination button{width:44px;height:44px;border:1px solid var(--line);border-radius:4px;background:#fff;cursor:pointer}.pedido-item-pagination button:disabled{opacity:.4;cursor:default}
+ .pedido-delivery{margin:14px 0;font-size:13px;line-height:1.5}.pedido-delivery dt{margin-top:8px}.pedido-documents{margin-top:16px;gap:8px}.pedido-documents button,.pedido-documents .button{padding:8px 12px;min-height:44px}
+ .pedido-payment{padding:20px 24px;overflow:hidden}.payment-method-label{margin-bottom:8px}.pedido-payment h3{font-size:25px;margin-bottom:8px}.payment-amount{font-size:28px;margin-bottom:10px}.qr-instruction{font-size:12px;line-height:1.5;margin-bottom:12px;max-width:38ch}.payment-qr-frame{max-width:210px;padding:8px;border-radius:8px}.download-qr{margin:0;min-height:36px}.payment-deadline,.payment-confirmed-note{padding:12px;margin-top:8px;font-size:12px;line-height:1.5;max-width:none}
+ .bank-account{padding:16px;margin:12px 0}.bank-account>strong{margin-bottom:16px;font-size:14px}.bank-cci{font-size:22px}.payment-demo-note{font-size:12px;margin:8px 0}.pedido-dialog-footer{padding:12px 24px}.pedido-dialog-footer button{min-height:44px}
+}
+@media(min-width:901px) and (max-height:740px){
+ .pedido-dialog-header{padding:12px 20px}.pedido-dialog-header h2{font-size:25px;margin:4px 0}.pedido-dialog-header p{font-size:12px}
+ .pedido-summary,.pedido-payment{padding:14px 20px}.pedido-total{padding:10px 0}.pedido-total>strong{font-size:28px}.pedido-details-tabs{margin-top:8px}.pedido-items li{padding:8px 0}.pedido-item-pagination{margin-top:6px}
+ .pedido-payment h3{font-size:22px}.payment-amount{font-size:24px;margin-bottom:6px}.payment-method-label{margin-bottom:6px}.qr-instruction{margin-bottom:8px}.payment-qr-frame{max-width:160px;padding:7px}.payment-deadline,.payment-confirmed-note{padding:8px;font-size:11px;line-height:1.45;margin-top:4px}.download-qr{font-size:12px;min-height:30px}.pedido-dialog-footer{padding:8px 20px}.bank-account{padding:12px;margin:8px 0}.bank-account>strong{margin-bottom:10px}.bank-cci{font-size:20px;margin-bottom:4px}.bank-account>span{margin-bottom:4px}#copy-cci-status:empty{display:none}
+}
+@media(min-width:761px) and (max-width:900px){.pedido-dialog-body{grid-template-columns:1fr;overflow-y:auto}.pedido-payment{grid-column:1;grid-row:1;border-left:0}.pedido-summary{grid-column:1;grid-row:2}}
+.pedido-dialog :focus-visible{outline:2px solid #865c48;outline-offset:3px}
