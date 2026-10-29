@@ -1,0 +1,25 @@
+OK: Visitante no edita reseñas
+OK: Cliente no edita desde el panel administrativo
+OK: Edición exige CSRF
+OK: Reseña inexistente devuelve 404
+OK: Texto demasiado corto rechazado
+OK: Texto de más de 3000 caracteres rechazado
+OK: Errores de validación conservan la reseña original
+OK: Imagen falsa rechazada
+OK: Archivo de imagen vacío rechazado
+OK: Imagen mayor de 5 MB rechazada
+OK: Una foto inválida tampoco modifica el texto
+OK: Admin actualiza solo el texto
+OK: Se conserva la imagen si no se elige otra
+OK: Se conservan autoría, producto, verificación y publicación
+OK: Admin puede reemplazar la fotografía
+OK: Nueva foto guardada con ruta controlada por Java
+OK: Campos extra no cambian compra, identidad ni publicación
+OK: Foto de reseña publicada accesible como JPEG normalizado
+OK: Cambios visibles sin convertir un ejemplo en compra verificada
+OK: Segunda sustitución de foto correcta
+OK: Foto reemplazada deja de ser accesible
+OK: Archivo reemplazado eliminado después de guardar
+OK: Editar no publica una reseña oculta
+OK: La foto oculta sigue reservada a administración
+{"checks": 24, "result": "OK"}

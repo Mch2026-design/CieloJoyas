@@ -1,0 +1,22 @@
+OK: Visitante no consulta datos guardados
+OK: Cuenta nueva no tiene datos de otra cuenta
+OK: Visitante no guarda datos sin cuenta
+OK: Compra inválida rechazada
+OK: Una compra fallida no guarda datos
+OK: Compra sin marcar permitida
+OK: Sin consentimiento no se guarda la entrega
+OK: Compra con Recuérdame registrada
+OK: Datos completos recordados después de comprar
+OK: No se guardan medios de pago ni selección del carrito como preferencia
+OK: Otra cuenta no recibe la información de Ana
+OK: Reintento conserva datos sin duplicar guardado
+OK: Compra sin marcar no sobrescribe los datos anteriores
+OK: Marcar de nuevo actualiza la entrega guardada
+OK: Segunda cuenta guarda su propia entrega
+OK: Datos distintos aislados por cuenta
+OK: Cerrar sesión protege los datos recordados
+OK: Datos recuperados al iniciar sesión otra vez
+OK: Olvidar datos requiere CSRF
+OK: Olvidar datos elimina la preferencia
+OK: Olvidar una cuenta no altera la otra
+{"checks": 21, "result": "OK"}

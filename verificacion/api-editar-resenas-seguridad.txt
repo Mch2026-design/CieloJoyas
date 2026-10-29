@@ -1,0 +1,39 @@
+OK: Registro Compradora
+OK: Registro Otra
+OK: Cinco ejemplos con foto y producto, separados de las compras verificadas
+OK: Visitante no consulta compras para reseñar
+OK: Cuenta nueva sin compras elegibles
+OK: Compra propia para probar reseña
+OK: Visitante no publica con un número de pedido conocido
+OK: Pedido pendiente no permite reseña
+OK: Pedido pendiente no aparece en el selector
+OK: Pago confirmado habilita la pieza
+OK: Selector muestra solo la compra propia pagada
+OK: Otra cuenta no hereda piezas para reseñar
+OK: Pedido ajeno rechazado aunque conozca su identificador
+OK: Admin no se hace pasar por compradora
+OK: Producto ajeno al pedido rechazado
+OK: Carga protegida contra envíos sin CSRF
+OK: Archivo falso rechazado aunque declare PNG
+OK: Fotografía obligatoria
+OK: Se rechaza foto demasiado pequeña
+OK: Foto de más de 5 MB rechazada
+OK: Reseña demasiado corta rechazada
+OK: Reseña de más de 3000 caracteres rechazada
+OK: Carga real de foto PNG y reseña para moderación
+OK: La pieza reseñada deja de ofrecerse
+OK: Reseña duplicada rechazada
+OK: Reseña sin moderar no se publica
+OK: Nombre y verificación provienen de sesión y compra
+OK: Foto pendiente no es pública ni visible para otra cuenta
+OK: Foto normalizada a JPEG visible para propietaria y moderación
+OK: Admin publica la reseña
+OK: Reseña publicada con producto, foto y sello verificado
+OK: Foto aprobada visible públicamente
+OK: Filtro de producto conserva solo su pieza
+OK: Ocultar una reseña también protege su foto
+OK: Cancelación del pedido aplicada
+OK: Un pago cancelado retira la reseña verificada y su foto
+OK: No se puede republicar una compra cancelada
+OK: Moderación de demostración funciona sin inventar pedidos
+{"checks": 38, "result": "OK"}

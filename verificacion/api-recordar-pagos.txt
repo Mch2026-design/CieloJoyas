@@ -1,0 +1,106 @@
+OK: Acceso administrador
+OK: Cuenta de cliente de pruebas
+OK: Cuenta de cliente de pruebas
+OK: CCI de demostración identificado y titular correcto
+OK: Catálogo no publica descargas de certificado antes de comprar
+OK: Pedido registrado con yape
+OK: Certificado bloqueado mientras el pago está pendiente: yape
+OK: La propietaria consulta su pedido: yape
+OK: Otras sesiones no consultan el pedido: yape
+OK: Java bloquea el PDF pendiente: yape
+OK: Pago confirmado desde administración: yape
+OK: El certificado se habilita al pagar: yape
+OK: PDF disponible después del pago: yape
+OK: Otra clienta no descarga el certificado: yape
+OK: Vista del certificado protegida: yape
+OK: Cancelar pago conserva transición válida: yape
+OK: Cancelar retira el certificado: yape
+OK: Pedido registrado con plin
+OK: Certificado bloqueado mientras el pago está pendiente: plin
+OK: La propietaria consulta su pedido: plin
+OK: Otras sesiones no consultan el pedido: plin
+OK: Java bloquea el PDF pendiente: plin
+OK: Pago confirmado desde administración: plin
+OK: El certificado se habilita al pagar: plin
+OK: PDF disponible después del pago: plin
+OK: Otra clienta no descarga el certificado: plin
+OK: Vista del certificado protegida: plin
+OK: Cancelar pago conserva transición válida: plin
+OK: Cancelar retira el certificado: plin
+OK: Pedido registrado con transferencia
+OK: Certificado bloqueado mientras el pago está pendiente: transferencia
+OK: La propietaria consulta su pedido: transferencia
+OK: Otras sesiones no consultan el pedido: transferencia
+OK: Java bloquea el PDF pendiente: transferencia
+OK: Pago confirmado desde administración: transferencia
+OK: El certificado se habilita al pagar: transferencia
+OK: PDF disponible después del pago: transferencia
+OK: Otra clienta no descarga el certificado: transferencia
+OK: Vista del certificado protegida: transferencia
+OK: Cancelar pago conserva transición válida: transferencia
+OK: Cancelar retira el certificado: transferencia
+OK: Pedido registrado con yape
+OK: Visitante conserva acceso a la compra de su propia sesión
+OK: Pago de visitante confirmado
+OK: Visitante obtiene certificado de su compra confirmada
+OK: La URL estática no permite saltar la comprobación: certificado-material.pdf
+OK: Administración puede revisar su plantilla: certificado-material.pdf
+OK: La URL estática no permite saltar la comprobación: certificado-material.png
+OK: Administración puede revisar su plantilla: certificado-material.png
+OK: QR de pago disponible
+{
+  "result": "OK",
+  "checks": 50,
+  "tests": [
+    "Acceso administrador",
+    "Cuenta de cliente de pruebas",
+    "Cuenta de cliente de pruebas",
+    "CCI de demostración identificado y titular correcto",
+    "Catálogo no publica descargas de certificado antes de comprar",
+    "Pedido registrado con yape",
+    "Certificado bloqueado mientras el pago está pendiente: yape",
+    "La propietaria consulta su pedido: yape",
+    "Otras sesiones no consultan el pedido: yape",
+    "Java bloquea el PDF pendiente: yape",
+    "Pago confirmado desde administración: yape",
+    "El certificado se habilita al pagar: yape",
+    "PDF disponible después del pago: yape",
+    "Otra clienta no descarga el certificado: yape",
+    "Vista del certificado protegida: yape",
+    "Cancelar pago conserva transición válida: yape",
+    "Cancelar retira el certificado: yape",
+    "Pedido registrado con plin",
+    "Certificado bloqueado mientras el pago está pendiente: plin",
+    "La propietaria consulta su pedido: plin",
+    "Otras sesiones no consultan el pedido: plin",
+    "Java bloquea el PDF pendiente: plin",
+    "Pago confirmado desde administración: plin",
+    "El certificado se habilita al pagar: plin",
+    "PDF disponible después del pago: plin",
+    "Otra clienta no descarga el certificado: plin",
+    "Vista del certificado protegida: plin",
+    "Cancelar pago conserva transición válida: plin",
+    "Cancelar retira el certificado: plin",
+    "Pedido registrado con transferencia",
+    "Certificado bloqueado mientras el pago está pendiente: transferencia",
+    "La propietaria consulta su pedido: transferencia",
+    "Otras sesiones no consultan el pedido: transferencia",
+    "Java bloquea el PDF pendiente: transferencia",
+    "Pago confirmado desde administración: transferencia",
+    "El certificado se habilita al pagar: transferencia",
+    "PDF disponible después del pago: transferencia",
+    "Otra clienta no descarga el certificado: transferencia",
+    "Vista del certificado protegida: transferencia",
+    "Cancelar pago conserva transición válida: transferencia",
+    "Cancelar retira el certificado: transferencia",
+    "Pedido registrado con yape",
+    "Visitante conserva acceso a la compra de su propia sesión",
+    "Pago de visitante confirmado",
+    "Visitante obtiene certificado de su compra confirmada",
+    "La URL estática no permite saltar la comprobación: certificado-material.pdf",
+    "Administración puede revisar su plantilla: certificado-material.pdf",
+    "La URL estática no permite saltar la comprobación: certificado-material.png",
+    "Administración puede revisar su plantilla: certificado-material.png",
+    "QR de pago disponible"
+  ]
+}

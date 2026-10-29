@@ -1,0 +1,71 @@
+OK: Conexión Java con PostgreSQL
+OK: Catálogo inicial de 8 productos
+OK: Creación de pedido: {'id': 1, 'customer': 'Cliente Prueba', 'firstName': 'Cliente', 'lastName': 'Prueba', 'email': 'prueba-cielo@example.test', 'phone': '987654321', 'address': 'Av. Pruebas 123', 'district': 'LIMA', 'province': 'LIMA', 'department': 'LIMA', 'status': 'pendiente', 'createdAt': '2026-10-29T06:23:12.734804Z', 'paidAt': None, 'subtotal': 110.0, 'discount': 11.0, 'shipping': None, 'total': 99.0, 'giftMessage': 'Regalo de prueba', 'paymentMethod': 'yape', 'paymentStatus': 'pendiente', 'emailSent': False, 'certificateAvailable': False, 'certificateUrl': None, 'items': [{'name': 'Anillo Inicial', 'quantity': 1, 'price': 55.0, 'engraving': 'Ana', 'size': '6'}, {'name': 'Anillo Inicial', 'quantity': 1, 'price': 55.0, 'engraving': 'Luz', 'size': '7'}]}
+OK: Precio y descuento calculados en el servidor
+OK: Reintento del pedido sin duplicados
+OK: Dos grabados conservados por separado
+OK: Pedido pendiente conserva stock
+OK: Ingresos excluyen pedidos pendientes
+OK: Rechazo de stock insuficiente
+OK: Rechazo de cantidad negativa
+OK: Validación de ubigeo en Java
+OK: Validación de documento en Java
+OK: Reseña requiere pago confirmado
+OK: Confirmación de pago
+OK: Pago confirmado descuenta stock
+OK: Confirmar dos veces no vuelve a descontar
+OK: Reporte de ingresos confirmados
+OK: Reseña de compra verificada
+OK: Reseña espera moderación
+OK: Moderación y publicación de reseña
+OK: Garantía comprueba correo de compra
+OK: Solicitud y seguimiento de garantía
+OK: Registro de proveedor
+OK: Compra a proveedor aumenta existencias
+OK: Suscripción integrada al cliente
+OK: Edición de inventario
+OK: Bloqueo concurrente evita sobreventa: [200, 409]
+OK: Cancelación repone existencias una vez
+OK: Cancelación repetida conserva stock
+OK: Preparación de prueba de transacción
+OK: Fallo de pago revierte todos los descuentos de stock
+OK: Pedido conserva el importe histórico
+{
+  "checks": 32,
+  "result": "OK",
+  "database": "instancia temporal PostgreSQL",
+  "tests": [
+    "Conexión Java con PostgreSQL",
+    "Catálogo inicial de 8 productos",
+    "Creación de pedido: {'id': 1, 'customer': 'Cliente Prueba', 'firstName': 'Cliente', 'lastName': 'Prueba', 'email': 'prueba-cielo@example.test', 'phone': '987654321', 'address': 'Av. Pruebas 123', 'district': 'LIMA', 'province': 'LIMA', 'department': 'LIMA', 'status': 'pendiente', 'createdAt': '2026-10-29T06:23:12.734804Z', 'paidAt': None, 'subtotal': 110.0, 'discount': 11.0, 'shipping': None, 'total': 99.0, 'giftMessage': 'Regalo de prueba', 'paymentMethod': 'yape', 'paymentStatus': 'pendiente', 'emailSent': False, 'certificateAvailable': False, 'certificateUrl': None, 'items': [{'name': 'Anillo Inicial', 'quantity': 1, 'price': 55.0, 'engraving': 'Ana', 'size': '6'}, {'name': 'Anillo Inicial', 'quantity': 1, 'price': 55.0, 'engraving': 'Luz', 'size': '7'}]}",
+    "Precio y descuento calculados en el servidor",
+    "Reintento del pedido sin duplicados",
+    "Dos grabados conservados por separado",
+    "Pedido pendiente conserva stock",
+    "Ingresos excluyen pedidos pendientes",
+    "Rechazo de stock insuficiente",
+    "Rechazo de cantidad negativa",
+    "Validación de ubigeo en Java",
+    "Validación de documento en Java",
+    "Reseña requiere pago confirmado",
+    "Confirmación de pago",
+    "Pago confirmado descuenta stock",
+    "Confirmar dos veces no vuelve a descontar",
+    "Reporte de ingresos confirmados",
+    "Reseña de compra verificada",
+    "Reseña espera moderación",
+    "Moderación y publicación de reseña",
+    "Garantía comprueba correo de compra",
+    "Solicitud y seguimiento de garantía",
+    "Registro de proveedor",
+    "Compra a proveedor aumenta existencias",
+    "Suscripción integrada al cliente",
+    "Edición de inventario",
+    "Bloqueo concurrente evita sobreventa: [200, 409]",
+    "Cancelación repone existencias una vez",
+    "Cancelación repetida conserva stock",
+    "Preparación de prueba de transacción",
+    "Fallo de pago revierte todos los descuentos de stock",
+    "Pedido conserva el importe histórico"
+  ]
+}

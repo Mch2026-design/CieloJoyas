@@ -1,0 +1,31 @@
+{
+  "result": "OK",
+  "checks": 23,
+  "tests": [
+    "Migración repetible; conserva las 12 tablas",
+    "Maven package: compilación, 10 pruebas de correo y arranque del contexto Java",
+    "JAR inicia con PostgreSQL y SMTP local",
+    "Registro de cuentas con correo válido",
+    "SMTP acepta el correo después de guardar el pedido",
+    "Java utiliza el correo de la cuenta y descarta el alternativo",
+    "Entrega únicamente al correo del comprador",
+    "Remitente y asunto con Cielo Joyas y número de pedido",
+    "Piezas y cantidades en líneas separadas",
+    "Personalización y acentos en MIME UTF-8",
+    "Descuento y total coinciden con Java",
+    "Dirección, localidad, referencia y medio de pago",
+    "Distingue recepción del pedido, verificación del pago y envío por cotizar",
+    "Repetir la solicitud no duplica el pedido ni el correo",
+    "Reintentos concurrentes no reenvían el aviso",
+    "Historial de la cuenta conserva el envío aceptado",
+    "Otra cuenta no puede leer la compra ni su correo",
+    "SMTP rechazado se informa sin afirmar envío",
+    "Fallo SMTP conserva el pedido sin fecha de envío",
+    "Reintentar un fallo SMTP recupera el aviso sin duplicar compra",
+    "Visitante recibe el pedido en el correo de checkout",
+    "Tres compras guardadas pese a los reintentos y el rechazo SMTP",
+    "Fecha de envío persistida en las tres compras aceptadas"
+  ],
+  "smtp": "local, sin correo externo",
+  "database": "temporal eliminada al terminar"
+}
