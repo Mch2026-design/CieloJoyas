@@ -1,0 +1,72 @@
+const {chromium,request}=require('/Users/flavio/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const fs=require('node:fs');
+const ROOT=process.env.API_URL||'http://127.0.0.1:18081';
+if(process.env.CIELO_TEST_ALLOW_MUTATIONS!=='1')throw Error('Usar solo base temporal');
+(async()=>{
+ const checks=[],errors=[];const ok=(value,label)=>{if(!value)throw Error(label);checks.push(label);console.log('OK:',label)};
+ const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--no-sandbox']});
+ const context=await browser.newContext({viewport:{width:1440,height:1000},deviceScaleFactor:1});const page=await context.newPage();
+ page.on('pageerror',e=>errors.push(e.message));
+ const admin=await request.newContext({baseURL:ROOT});let csrf=(await (await admin.get('/api/auth/me')).json()).csrf;
+ csrf=(await (await admin.post('/api/auth/login',{headers:{'X-CSRF-Token':csrf},data:{email:'admin-prueba@example.test',password:'CieloPrueba2026Local'}})).json()).csrf;
+ const adminApi=async(method,path,data)=>{const response=await admin.fetch('/api'+path,{method,data,headers:{'X-CSRF-Token':csrf}});if(!response.ok())throw Error(await response.text());return response.json()};
+ for(const r of await adminApi('GET','/admin/reviews'))if(!r.demonstration&&r.approved)await adminApi('PATCH','/admin/reviews/'+r.id,{approved:false});
+ await page.goto(ROOT+'/resenas.html');await page.waitForFunction(()=>document.querySelector('#reviews-grid').getAttribute('aria-busy')==='false');
+ ok(await page.locator('.review-card').count()===5,'Cinco tarjetas de demostración desde PostgreSQL');
+ ok(await page.locator('.review-badge.demo').count()===5,'Ejemplos identificados sin falsas compras verificadas');
+ ok(await page.locator('#nav a[aria-current="page"]').textContent()==='Reseñas','Navegación activa renombrada');
+ await page.locator('#review-login').waitFor({state:'visible'});ok(await page.locator('#write-review').isHidden(),'Visitante recibe acceso para iniciar sesión');
+ ok(await page.locator('.reviewed-product a').count()===5,'Cada reseña enlaza su producto');
+ await page.locator('.review-card img').evaluateAll(imgs=>Promise.all(imgs.map(img=>{img.loading='eager';return Promise.race([img.decode().catch(()=>{}),new Promise(r=>setTimeout(r,15000))]);})));
+ const loaded=await page.locator('.review-card-photo img').evaluateAll(imgs=>imgs.filter(i=>i.naturalWidth>0).length);ok(loaded===5,'Las cinco fotos se cargan correctamente');
+ for(const width of [320,375,768,1440]){
+  await page.setViewportSize({width,height:1000});await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+  ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Sin desbordamiento horizontal a '+width+' px');
+  if(width===375)await page.screenshot({path:'verificacion/resenas-movil.png'});
+  if(width===375||width===1440)await page.screenshot({path:'verificacion/resenas-'+width+'.png',fullPage:true});
+ }
+ await page.locator('.review-card-photo').first().click();ok(await page.locator('#review-photo-dialog').isVisible(),'Foto ampliable en diálogo con fondo desenfocado');
+ await page.keyboard.press('Escape');ok(await page.locator('#review-photo-dialog').isHidden(),'Escape cierra la foto');
+ await page.locator('#review-filter').selectOption({index:1},{force:true});ok(await page.locator('.review-card').count()===1,'Filtro por pieza funciona');
+ await page.locator('.reviewed-product a').click();await page.locator('#product-modal').waitFor({state:'visible'});
+ ok(await page.locator('#product-modal-title').textContent()==='Anillo Minimalista','Enlace lleva al detalle del producto reseñado');
+ await page.goto(ROOT+'/nosotras.html');await page.waitForURL('**/resenas.html');ok(true,'Dirección anterior conserva acceso a Reseñas');
+ const email='ui-resena-'+Date.now()+'@example.test';
+ await page.evaluate(async email=>{await Cielo.api('/auth/register',{method:'POST',body:{firstName:'Valeria',lastName:'Pruebas',email,password:'CieloPrueba2026Local'}})},email);
+ await page.reload();await page.locator('#write-review').waitFor({state:'visible'});await page.locator('#write-review').click();
+ await page.waitForFunction(()=>document.querySelector('#review-eligibility').textContent.includes('No tienes piezas'));
+ ok(await page.locator('#review-dialog').isHidden() && (await page.locator('#review-eligibility').textContent()).includes('No tienes piezas'),'Cuenta sin compras recibe explicación útil');
+ const products=await page.evaluate(()=>Cielo.api('/products'));const p=products.find(p=>p.stock>=2);
+ const order=await page.evaluate(async({p,email})=>Cielo.api('/orders',{method:'POST',body:{requestId:crypto.randomUUID(),firstName:'Valeria',lastName:'Pruebas',email,phone:'987654321',documentType:'dni',documentId:'12345678',addressLine:'Av. Pruebas 123',ubigeo:'150101',paymentMethod:'yape',items:[{productId:p.id,quantity:1}]}}),{p,email});
+ await adminApi('PATCH','/admin/orders/'+order.id+'/status',{status:'pagado'});
+ await page.locator('#write-review').click();await page.locator('#review-dialog').waitFor({state:'visible'});
+ ok(await page.locator('#review-purchase option').count()===2,'Formulario ofrece únicamente la pieza comprada');
+ ok(await page.locator('#review-dialog').evaluate(el=>el.contains(document.activeElement)),'El foco entra en el formulario');
+ await page.locator('#submit-review').focus();await page.keyboard.press('Tab');
+ ok(await page.locator('#review-dialog').evaluate(el=>el.contains(document.activeElement)),'La navegación por teclado queda dentro de la ventana');
+ await page.locator('#review-purchase').selectOption('0',{force:true});ok((await page.locator('#review-selected-product').textContent()).includes(p.name),'La pieza seleccionada tiene vista previa');
+ await page.locator('#review-body').fill('Me encanta mi pieza de Cielo. Un detalle especial para llevar todos los días.');
+ // Fixture PNG de 120 × 120 píxeles, sin datos personales.
+ const photo=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAABIElEQVR4nO3SQQ0AIAADMcB/sIEJxKGCe7UGllw279mD/1awgdAdj44IHRE6InRE6IjQEaEjQkeEjggdEToidEToiNARoSNCR4SOCB0ROiJ0ROiI0BGhI0JHhI4IHRE6InRE6IjQEaEjQkeEjggdEToidEToiNARoSNCR4SOCB0ROiJ0ROiI0BGhI0JHhI4IHRE6InRE6IjQEaEjQkeEjggdEToidEToiNARoSNCR4SOCB0ROiJ0ROiI0BGhI0JHhI4IHRE6InRE6IjQEaEjQkeEjggdEToidEToiNARoSNCR4SOCB0ROiJ0ROiI0BGhI0JHhI4IHRE6InRE6IjQEaEjQkeEjggdEToidEToiNARoSNCR4SOCB0ROiJ0ROjReJVkAuGIEnKNAAAAAElFTkSuQmCC','base64');
+ await page.locator('#review-photo').setInputFiles({name:'mi-pieza.png',mimeType:'image/png',buffer:photo});
+ ok(await page.locator('#review-photo-preview').isVisible(),'Vista previa de la foto seleccionada');
+ for(const viewport of [{width:375,height:812},{width:812,height:375},{width:1440,height:1000}]){
+  await page.setViewportSize(viewport);await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+  ok(await page.locator('#review-dialog').evaluate(el=>{const r=el.getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight+1&&r.left>=0&&r.right<=innerWidth}),'Formulario encuadrado a '+viewport.width+' × '+viewport.height);
+  ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Formulario sin desbordamiento a '+viewport.width);
+  if(viewport.width===375)await page.screenshot({path:'verificacion/resenas-formulario-375.png'});
+ }
+ await page.locator('#submit-review').click();await page.locator('#review-dialog').waitFor({state:'hidden'});
+ ok((await page.locator('.review-submitted').last().textContent()).includes('después de revisarlas'),'Confirmación de envío y moderación');
+ const r=(await adminApi('GET','/admin/reviews')).find(r=>r.name==='Valeria Pruebas');ok(!!r && !r.approved && !!r.photo,'Reseña y foto guardadas en la base');
+ await adminApi('PATCH','/admin/reviews/'+r.id,{approved:true});await page.reload();await page.waitForFunction(()=>document.querySelector('#reviews-grid').getAttribute('aria-busy')==='false');
+ ok(await page.locator('.review-badge:not(.demo)').count()===1,'Compra auténtica aprobada muestra sello verificado');
+ await adminApi('PATCH','/admin/reviews/'+r.id,{approved:false});
+ await page.evaluate(()=>Cielo.api('/auth/logout',{method:'POST'}));await page.reload();
+ await page.evaluate(async()=>{await Cielo.api('/auth/login',{method:'POST',body:{email:'admin-prueba@example.test',password:'CieloPrueba2026Local'}})});
+ await page.goto(ROOT+'/admin-posventa.html');await page.locator('.moderation-photo').first().waitFor();
+ ok(await page.locator('.moderation-photo img').count()>=6,'Panel admin muestra fotos para moderar');
+ ok(errors.length===0,'Sin errores JavaScript: '+errors.join(', '));
+ fs.writeFileSync('verificacion/navegador-resenas.json',JSON.stringify({checks:checks.length,result:'OK',tests:checks},null,2));
+ await browser.close();await admin.dispose();
+})().catch(e=>{console.error(e);process.exit(1)});
