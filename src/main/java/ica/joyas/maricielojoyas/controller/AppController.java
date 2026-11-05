@@ -254,6 +254,7 @@ public class AppController {
         p.setMaterial(texto(datos, "material", 0, 150)); p.setNotas(texto(datos, "notes", 0, 3000));
         if (datos.containsKey("supplyCategory"))
             p.setCategoriaInsumo(opcion(datos, "supplyCategory", Set.of("acero", "gemas", "perlas", "otros")));
+        if (datos.containsKey("imageUrl")) p.setImagenUrl(url(datos, "imageUrl", false));
         p.setActivo(!datos.containsKey("active") || bandera(datos, "active")); return proveedores.save(p);
     }
     @GetMapping("/admin/purchases") public List<Map<String, Object>> compras() { return compras.findAllByOrderByIdDesc().stream().map(c -> vista("id", c.getId(), "vendor", c.getProveedor().getNombre(), "product", c.getProducto().getNombre(), "quantity", c.getCantidad(), "total", c.getTotal(), "reference", c.getComprobante(), "createdAt", c.getCreadoEn())).toList(); }

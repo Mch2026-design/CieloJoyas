@@ -38,11 +38,30 @@ function productOptions(){
 }
 async function loadProducts(){allProducts=await api('/admin/products');window.ProductosAdmin?.setProducts(allProducts);productOptions();}
 const supplySections={acero:'Acero quirúrgico',gemas:'Accesorios con gemas',perlas:'Perlas',otros:'Otros insumos'};
+function vendorImageUrl(value){try{const u=new URL(value);return u.protocol==='https:'?u.href:'';}catch{return '';}}
+function vendorInitials(name){return (name||'Proveedor').trim().split(/\s+/).slice(0,2).map(word=>Array.from(word)[0]||'').join('').toLocaleUpperCase('es');}
+function vendorAvatar(v){const src=vendorImageUrl(v.imagenUrl);return `<div class="vendor-avatar">${src?`<img data-vendor-image src="${esc(src)}" alt="" width="80" height="80" loading="lazy" referrerpolicy="no-referrer">`:''}<span aria-hidden="true">${esc(vendorInitials(v.nombre))}</span></div>`;}
+function previewVendor(){
+ const form=$('#vendor-form');if(!form)return;
+ const name=form.elements.name.value.trim(),src=vendorImageUrl(form.elements.imageUrl.value.trim()),img=$('#vendor-preview-image');
+ $('#vendor-preview-name').textContent=name||'Nombre del proveedor';$('#vendor-preview-initials').textContent=vendorInitials(name);
+ if(src&&img.dataset.url===src)return;
+ img.dataset.url=src;img.hidden=true;
+ if(src){$('#vendor-image-status').textContent='Cargando vista previa…';img.src=src;}
+ else{img.removeAttribute('src');$('#vendor-image-status').textContent=form.elements.imageUrl.value.trim()?'Usa un enlace HTTPS completo para ver la imagen.':'Sin imagen. Se mostrarán las iniciales.';}
+}
+$('#vendor-preview-image')?.addEventListener('load',e=>{if(!e.target.dataset.url)return;e.target.hidden=false;$('#vendor-image-status').textContent='Vista previa de la imagen.';});
+$('#vendor-preview-image')?.addEventListener('error',e=>{e.target.hidden=true;$('#vendor-image-status').textContent='No se pudo cargar la imagen. Revisa el enlace o prueba con otro.';});
+$('#vendor-form [name=imageUrl]')?.addEventListener('change',previewVendor);
+$('#vendor-form [name=name]')?.addEventListener('input',previewVendor);
+$('#vendor-form')?.addEventListener('reset',()=>queueMicrotask(previewVendor));
+$('#vendor-list')?.addEventListener('error',e=>{if(e.target.matches('[data-vendor-image]'))e.target.hidden=true;},true);
+
 async function loadVendors(){
  allVendors=await api('/admin/vendors');
  if($('#vendor-list'))$('#vendor-list').innerHTML=Object.entries(supplySections).map(([key,title])=>{
   const rows=allVendors.filter(v=>v.categoriaInsumo===key);
-  return `<section class="supply-section" aria-labelledby="supply-${key}"><div class="supply-material"><h3 id="supply-${key}">${esc(title)}</h3><span>${rows.length} ${rows.length===1?'proveedor':'proveedores'}</span></div><div class="supply-vendors">${rows.length?rows.map(v=>`<div class="management-row"><div><b>${esc(v.nombre)}</b><small>${esc(v.contacto||'Sin contacto registrado')} · ${v.activo?'Activo':'Inactivo'}</small><p>${esc(v.material||'Sin material detallado')}</p>${v.notas?`<p>${esc(v.notas)}</p>`:''}</div><button class="row-action" data-vendor="${v.id}" type="button" aria-label="Editar proveedor ${esc(v.nombre)}">Editar</button></div>`).join(''):'<p>Sin proveedores registrados en este apartado.</p>'}<button class="export-button" data-new-vendor="${key}" type="button">Agregar proveedor</button></div></section>`;
+  return `<section class="supply-section" aria-labelledby="supply-${key}"><div class="supply-material"><h3 id="supply-${key}">${esc(title)}</h3><span>${rows.length} ${rows.length===1?'proveedor':'proveedores'}</span></div><div class="supply-vendors">${rows.length?rows.map(v=>`<div class="management-row vendor-row"><div class="vendor-identity">${vendorAvatar(v)}<div class="vendor-details"><b>${esc(v.nombre)}</b><small>${esc(v.contacto||'Sin contacto registrado')} · ${v.activo?'Activo':'Inactivo'}</small><p>${esc(v.material||'Sin material detallado')}</p>${v.notas?`<p>${esc(v.notas)}</p>`:''}</div></div><button class="row-action" data-vendor="${v.id}" type="button" aria-label="Editar proveedor ${esc(v.nombre)}">Editar</button></div>`).join(''):'<p>Sin proveedores registrados en este apartado.</p>'}<button class="export-button" data-new-vendor="${key}" type="button">Agregar proveedor</button></div></section>`;
  }).join('');
  productOptions();
 }
@@ -77,7 +96,7 @@ window.CieloAdminReviews={reload:loadReviews,find:id=>allReviews.find(r=>r.id===
 function handleError(error){if(error.status===401){location.replace('login.html?next=admin.html');return;}if(error.status===403){location.replace('index.html');return;}$('#report-error').textContent=error.message;}
 $('#orders-table')?.addEventListener('change',async e=>{const select=e.target.closest('[data-status]');if(!select)return;const old=currentReport.recent.find(o=>o.id===Number(select.dataset.status)).status;if(['pagado','cancelado'].includes(select.value)&&!(await CieloControls.confirm(select.value==='pagado'?'¿Confirmas que verificaste el pago? Se descontarán las existencias.':'¿Cancelar este pedido? Si estaba pagado se repondrá el stock; coordina el reembolso por separado.'))){select.value=old;return;}select.disabled=true;try{await api('/admin/orders/'+select.dataset.status+'/status',{method:'PATCH',body:{status:select.value}});await loadReport();message('Estado del pedido actualizado.');}catch(error){select.value=old;handleError(error);}finally{select.disabled=false;}});
 function fillForm(form,values){for(const [key,value]of Object.entries(values)){const el=form.elements.namedItem(key);if(!el)continue;if(el.type==='checkbox')el.checked=!!value;else el.value=value??'';}}
-$('#vendor-list')?.addEventListener('click',e=>{const add=e.target.closest('[data-new-vendor]');if(add){$('#vendor-form').reset();$('#vendor-form [name=id]').value='';$('#vendor-form [name=supplyCategory]').value=add.dataset.newVendor;$('#vendor-form [name=name]').focus();return;}const b=e.target.closest('[data-vendor]');if(!b)return;const v=allVendors.find(x=>x.id===Number(b.dataset.vendor));fillForm($('#vendor-form'),{id:v.id,name:v.nombre,contact:v.contacto,material:v.material,supplyCategory:v.categoriaInsumo,notes:v.notas,active:v.activo});$('#vendor-form').scrollIntoView();$('#vendor-form [name=name]').focus();});
+$('#vendor-list')?.addEventListener('click',e=>{const add=e.target.closest('[data-new-vendor]');if(add){$('#vendor-form').reset();$('#vendor-form [name=id]').value='';$('#vendor-form [name=supplyCategory]').value=add.dataset.newVendor;$('#vendor-form [name=name]').focus();return;}const b=e.target.closest('[data-vendor]');if(!b)return;const v=allVendors.find(x=>x.id===Number(b.dataset.vendor));fillForm($('#vendor-form'),{id:v.id,name:v.nombre,contact:v.contacto,material:v.material,imageUrl:v.imagenUrl,supplyCategory:v.categoriaInsumo,notes:v.notas,active:v.activo});previewVendor();$('#vendor-form').scrollIntoView();$('#vendor-form [name=name]').focus();});
 $('#reset-vendor')?.addEventListener('click',()=>{$('#vendor-form').reset();$('#vendor-form [name=id]').value='';});
 $('#coupon-list')?.addEventListener('click',e=>{const b=e.target.closest('[data-coupon]');if(!b)return;const c=allCoupons.find(x=>x.id===Number(b.dataset.coupon));const local=c.expiresAt?new Date(new Date(c.expiresAt).getTime()-new Date(c.expiresAt).getTimezoneOffset()*60000).toISOString().slice(0,16):'';fillForm($('#coupon-form'),{...c,expiresAt:local});$('#coupon-form').scrollIntoView();$('#coupon-form [name=code]').focus();});
 for(const kind of ['vendor','purchase','coupon'])$('#'+kind+'-form')?.addEventListener('submit',async e=>{

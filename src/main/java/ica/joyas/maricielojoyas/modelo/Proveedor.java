@@ -32,6 +32,12 @@ public class Proveedor {
     public String getCategoriaInsumo() { return categoriaInsumo; }
     public void setCategoriaInsumo(String categoriaInsumo) { this.categoriaInsumo = categoriaInsumo; }
 
+    @Column(name = "imagen_url", nullable = true, length = 2000)
+    private String imagenUrl;
+
+    public String getImagenUrl() { return imagenUrl; }
+    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
+
     public Proveedor() {}
 
     public Long getId() { return id; }

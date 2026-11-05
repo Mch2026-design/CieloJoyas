@@ -20,7 +20,11 @@ window.Cielo = (() => {
         body: options.body === undefined ? undefined : multipart ? options.body : JSON.stringify(options.body)});
       const data = await response.json().catch(() => ({}));
       if (!response.ok) { const error = Error(data.error || 'No se pudo completar la operación. Vuelve a intentarlo.'); error.status=response.status; if(response.status===401||response.status===403)currentSession=null; throw error; }
-      if (path.startsWith('/auth/')) currentSession = null;
+      if (path.startsWith('/auth/')) {
+        currentSession = null;
+        // Las otras pestañas comparten la cookie de sesión y deben cambiar de carrito.
+        try { localStorage.setItem('cielo-session-change',crypto.randomUUID()); } catch {}
+      }
       return data;
     } catch (error) {
       if (error.name === 'AbortError') throw Error('La conexión tardó demasiado. Vuelve a intentarlo.');

@@ -42,4 +42,23 @@ class ProveedoresTests {
         when(repository.findById(12L)).thenReturn(Optional.of(previo));
         assertEquals("perlas", controller().guardarProveedor(Map.of("id", "12", "name", "Proveedor actualizado")).getCategoriaInsumo());
     }
+    @Test void registraImagenHttpsYPermiteQuitarla() {
+        Proveedor previo = new Proveedor(); previo.setId(12L);
+        when(repository.findById(12L)).thenReturn(Optional.of(previo));
+        AppController api = controller();
+        assertEquals("https://imagenes.example.test/logo.png", api.guardarProveedor(Map.of("id", "12", "name", "Proveedor", "imageUrl", "https://imagenes.example.test/logo.png")).getImagenUrl());
+        assertNull(api.guardarProveedor(Map.of("id", "12", "name", "Proveedor", "imageUrl", "")).getImagenUrl());
+    }
+    @Test void rechazaImagenesConProtocolosInsegurosSinGuardar() {
+        AppController api = controller();
+        for (String value : java.util.List.of("http://ejemplo.test/foto.png", "javascript:alert(1)", "data:image/png;base64,AAAA", "no-es-url", "https://ejemplo.test/" + "a".repeat(2000)))
+            assertThrows(ResponseStatusException.class, () -> api.guardarProveedor(Map.of("name", "Proveedor", "imageUrl", value)));
+        verify(repository, never()).save(any());
+    }
+    @Test void unaEdicionAnteriorConservaLaImagenGuardada() {
+        Proveedor previo = new Proveedor(); previo.setId(12L); previo.setImagenUrl("https://imagenes.example.test/logo.png");
+        when(repository.findById(12L)).thenReturn(Optional.of(previo));
+        assertEquals(previo.getImagenUrl(), controller().guardarProveedor(Map.of("id", "12", "name", "Proveedor actualizado")).getImagenUrl());
+    }
+
 }
