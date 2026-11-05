@@ -1,0 +1,28 @@
+OK: WhatsApp público en index
+OK: WhatsApp público en novedades
+OK: WhatsApp público en catalogo
+OK: WhatsApp público en personaliza
+OK: WhatsApp público en resenas
+OK: WhatsApp público en contacto
+OK: WhatsApp público en ofertas
+OK: WhatsApp público en login
+OK: WhatsApp público en registro
+OK: WhatsApp público en configurar-admin
+OK: Enlace al número 900 934 669
+OK: Contacto abre en pestaña nueva
+OK: Contacto fijo al desplazar a 1440 px
+OK: Contacto encuadrado a 1440 px
+OK: Contacto fijo al desplazar a 375 px
+OK: Contacto encuadrado a 375 px
+OK: Contacto fijo al desplazar a 320 px
+OK: Contacto encuadrado a 320 px
+OK: Perfil excluido para cliente
+OK: Cliente ve el contacto al volver a la tienda
+OK: WhatsApp también visible en productos
+OK: WhatsApp también visible en admin-pedidos
+OK: WhatsApp también visible en admin-reportes
+OK: WhatsApp también visible en admin-compras
+OK: WhatsApp también visible en admin-posventa
+OK: WhatsApp también visible en admin-promociones
+OK: Contacto visible aunque la API o sesión no respondan
+OK: Sin errores JavaScript: 

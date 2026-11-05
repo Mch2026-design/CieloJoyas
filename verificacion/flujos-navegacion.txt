@@ -1,0 +1,125 @@
+OK Carga sin error: /admin.html
+OK Carga sin error: /admin.html
+OK Sin desborde admin.html 1440
+OK Página activa admin.html 1440
+OK Carga sin error: /admin-pedidos.html
+OK Sin desborde admin-pedidos.html 1440
+OK Página activa admin-pedidos.html 1440
+OK Carga sin error: /admin-productos.html
+OK Sin desborde admin-productos.html 1440
+OK Página activa admin-productos.html 1440
+OK Carga sin error: /admin-reportes.html
+OK Sin desborde admin-reportes.html 1440
+OK Página activa admin-reportes.html 1440
+OK Carga sin error: /admin-compras.html
+OK Sin desborde admin-compras.html 1440
+OK Página activa admin-compras.html 1440
+OK Carga sin error: /admin-posventa.html
+OK Sin desborde admin-posventa.html 1440
+OK Página activa admin-posventa.html 1440
+OK Carga sin error: /admin-promociones.html
+OK Sin desborde admin-promociones.html 1440
+OK Página activa admin-promociones.html 1440
+OK Carga sin error: /admin.html
+OK Sin desborde admin.html 1024
+OK Página activa admin.html 1024
+OK Carga sin error: /admin-pedidos.html
+OK Sin desborde admin-pedidos.html 1024
+OK Página activa admin-pedidos.html 1024
+OK Carga sin error: /admin-productos.html
+OK Sin desborde admin-productos.html 1024
+OK Página activa admin-productos.html 1024
+OK Carga sin error: /admin-reportes.html
+OK Sin desborde admin-reportes.html 1024
+OK Página activa admin-reportes.html 1024
+OK Carga sin error: /admin-compras.html
+OK Sin desborde admin-compras.html 1024
+OK Página activa admin-compras.html 1024
+OK Carga sin error: /admin-posventa.html
+OK Sin desborde admin-posventa.html 1024
+OK Página activa admin-posventa.html 1024
+OK Carga sin error: /admin-promociones.html
+OK Sin desborde admin-promociones.html 1024
+OK Página activa admin-promociones.html 1024
+OK Carga sin error: /admin.html
+OK Sin desborde admin.html 390
+OK Página activa admin.html 390
+OK Carga sin error: /admin-pedidos.html
+OK Sin desborde admin-pedidos.html 390
+OK Página activa admin-pedidos.html 390
+OK Carga sin error: /admin-productos.html
+OK Sin desborde admin-productos.html 390
+OK Página activa admin-productos.html 390
+OK Carga sin error: /admin-reportes.html
+OK Sin desborde admin-reportes.html 390
+OK Página activa admin-reportes.html 390
+OK Carga sin error: /admin-compras.html
+OK Sin desborde admin-compras.html 390
+OK Página activa admin-compras.html 390
+OK Carga sin error: /admin-posventa.html
+OK Sin desborde admin-posventa.html 390
+OK Página activa admin-posventa.html 390
+OK Carga sin error: /admin-promociones.html
+OK Sin desborde admin-promociones.html 390
+OK Página activa admin-promociones.html 390
+OK Carga sin error: /admin.html
+OK Sin desborde admin.html 320
+OK Página activa admin.html 320
+OK Barra horizontal admin.html
+OK Carga sin error: /admin-pedidos.html
+OK Sin desborde admin-pedidos.html 320
+OK Página activa admin-pedidos.html 320
+OK Barra horizontal admin-pedidos.html
+OK Carga sin error: /admin-productos.html
+OK Sin desborde admin-productos.html 320
+OK Página activa admin-productos.html 320
+OK Barra horizontal admin-productos.html
+OK Carga sin error: /admin-reportes.html
+OK Sin desborde admin-reportes.html 320
+OK Página activa admin-reportes.html 320
+OK Barra horizontal admin-reportes.html
+OK Carga sin error: /admin-compras.html
+OK Sin desborde admin-compras.html 320
+OK Página activa admin-compras.html 320
+OK Barra horizontal admin-compras.html
+OK Carga sin error: /admin-posventa.html
+OK Sin desborde admin-posventa.html 320
+OK Página activa admin-posventa.html 320
+OK Barra horizontal admin-posventa.html
+OK Carga sin error: /admin-promociones.html
+OK Sin desborde admin-promociones.html 320
+OK Página activa admin-promociones.html 320
+OK Barra horizontal admin-promociones.html
+OK Carga sin error: /admin-pedidos.html
+OK Enlace abre otro HTML desde arriba
+OK Detalle de pedido funciona
+OK Carga sin error: /admin-productos.html
+OK Edición carga el formulario del producto
+OK Nuevo producto limpia la edición
+OK Carga sin error: /admin-compras.html
+OK Proveedor guardado desde su página
+OK Compra guardada y stock actualizado
+OK Carga sin error: /admin-promociones.html
+OK Cupón se guarda y se puede editar
+OK Registro tiene solo cuatro campos
+OK Registro abre index.html
+OK La cabecera muestra solo el primer nombre
+OK Nombre visible index.html
+OK Acciones alineadas a 320 px: index.html
+OK Nombre visible catalogo.html
+OK Acciones alineadas a 320 px: catalogo.html
+OK Nombre visible novedades.html
+OK Acciones alineadas a 320 px: novedades.html
+OK Nombre visible personaliza.html
+OK Acciones alineadas a 320 px: personaliza.html
+OK Nombre visible nosotras.html
+OK Acciones alineadas a 320 px: nosotras.html
+OK Nombre visible contacto.html
+OK Acciones alineadas a 320 px: contacto.html
+OK Nombre visible ofertas.html
+OK Acciones alineadas a 320 px: ofertas.html
+OK Nombre visible cuenta.html
+OK Acciones alineadas a 320 px: cuenta.html
+OK Salir cierra sesión y vuelve al inicio
+OK Login de cliente abre index.html
+OK Sin errores JavaScript en los flujos

@@ -1,0 +1,14 @@
+{
+  "result": "OK",
+  "url": "http://127.0.0.1:8080",
+  "database": "maricielojoyas",
+  "routes_http_200": [
+    "/",
+    "/registro.html",
+    "/login.html",
+    "/catalogo.html",
+    "/api/products",
+    "/api/config"
+  ],
+  "private_smtp_file_http_status": 404
+}

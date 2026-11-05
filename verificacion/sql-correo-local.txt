@@ -1,0 +1,5 @@
+BEGIN
+psql:sql/migracion_03_correo_pedidos.sql:3: NOTICE:  column "correo_enviado_en" of relation "pedidos" already exists, skipping
+ALTER TABLE
+COMMENT
+COMMIT

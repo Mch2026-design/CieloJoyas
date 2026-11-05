@@ -1,0 +1,61 @@
+OK Carga del panel sin errores
+OK El administrador entra directamente a productos.html
+OK Se elimina Resumen y quedan seis apartados
+OK El formulario permanece oculto al entrar
+OK No existe el campo Precio anterior
+OK El certificado es compartido y no pide una URL
+OK Lista sin desborde 1440x1000
+OK Ventana dentro de pantalla 1440x1000
+OK Foco contenido en ventana 1440
+OK Escape cierra ventana sin cambios 1440
+OK Lista sin desborde 1024x768
+OK Ventana dentro de pantalla 1024x768
+OK Foco contenido en ventana 1024
+OK Escape cierra ventana sin cambios 1024
+OK Lista sin desborde 768x1024
+OK Ventana dentro de pantalla 768x1024
+OK Foco contenido en ventana 768
+OK Escape cierra ventana sin cambios 768
+OK Lista sin desborde 375x812
+OK Ventana dentro de pantalla 375x812
+OK Foco contenido en ventana 375
+OK Escape cierra ventana sin cambios 375
+OK Lista sin desborde 320x568
+OK Ventana dentro de pantalla 320x568
+OK Foco contenido en ventana 320
+OK Escape cierra ventana sin cambios 320
+OK Lista sin desborde 812x375
+OK Ventana dentro de pantalla 812x375
+OK Foco contenido en ventana 812
+OK Escape cierra ventana sin cambios 812
+OK Producto agregado desde la ventana
+OK Alta guardada por Java
+OK Producto incluye el certificado común
+OK Editar abre la misma ventana con los datos cargados
+OK Edición actualiza el precio sin precio anterior
+OK Se puede conservar la edición al cancelar el cierre
+OK Se pueden descartar cambios y cerrar
+OK Búsqueda por nombre funciona
+OK Carga del panel sin errores
+OK La búsqueda se conserva al recargar
+OK Eliminar retira el producto de la tienda
+OK Producto oculto puede volver a publicarse
+OK Carga del panel sin errores
+OK Navegación coherente admin-pedidos.html
+OK Carga del panel sin errores
+OK Navegación coherente admin-reportes.html
+OK Carga del panel sin errores
+OK Navegación coherente admin-compras.html
+OK Carga del panel sin errores
+OK Navegación coherente admin-posventa.html
+OK Carga del panel sin errores
+OK Navegación coherente admin-promociones.html
+OK Compra completa desde el checkout real
+OK PDF descargado al confirmar la compra
+OK Historial muestra el certificado adjuntado
+OK PDF descargado desde el historial
+OK Historial con certificado sin desborde 1440
+OK Historial con certificado sin desborde 375
+OK Historial con certificado sin desborde 320
+OK PDF generado para 50 líneas largas sin limitar la compra
+OK Sin errores JavaScript en todos los flujos

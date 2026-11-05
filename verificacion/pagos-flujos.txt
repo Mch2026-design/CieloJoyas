@@ -1,0 +1,48 @@
+OK Pieza personalizable disponible para comprobar un solo clic
+OK Primer clic añade una unidad
+OK El carrito no se abre al añadir
+OK Añadir pieza personalizable no exige abrir otro formulario
+OK Primera adición muestra aviso
+OK Cada clic posterior incrementa la cantidad
+OK No se repite el aviso al seguir añadiendo
+OK Adiciones repetidas mantienen el carrito cerrado
+OK El carrito se acumula entre páginas
+OK Cambiar de página no repite el aviso
+OK Rango máximo de precio: 250
+OK Precio máximo inicial de S/ 250
+OK Campos y deslizadores sincronizados
+OK Limpiar filtros restaura 0 y 250
+OK Checkout abre la ventana nueva del pedido
+OK Confirmación muestra el QR de Yape
+OK Se utiliza el QR adjuntado
+OK Aviso del plazo máximo de verificación
+OK No hay botón de certificado pendiente
+OK Fondo desenfocado en la ventana de pedido
+OK Ventana Yape dentro de pantalla 1440x1000
+OK Sin desborde de página 1440
+OK Ventana Yape dentro de pantalla 1024x768
+OK Sin desborde de página 1024
+OK Ventana Yape dentro de pantalla 375x812
+OK Sin desborde de página 375
+OK Ventana Yape dentro de pantalla 320x568
+OK Sin desborde de página 320
+OK Ventana Yape dentro de pantalla 812x375
+OK Sin desborde de página 812
+OK Pedido pendiente descarga solo su información
+OK Historial abre una interfaz modal
+OK Historial conserva el medio de pago
+OK Actualizar refleja el pago confirmado
+OK El aviso pendiente desaparece al pagar
+OK El certificado se descarga después de confirmar
+OK Escape cierra el detalle
+OK El historial habilita su enlace de certificado
+OK Certificado pendiente oculto: plin
+OK Plin muestra el QR solicitado
+OK Detalle móvil sin desborde: plin
+OK Certificado pendiente oculto: transferencia
+OK Transferencia muestra el titular solicitado
+OK CCI de 20 dígitos visible
+OK CCI inventado identificado como demostración
+OK Transferencia muestra CCI en lugar del QR
+OK Detalle móvil sin desborde: transferencia
+OK Sin errores JavaScript

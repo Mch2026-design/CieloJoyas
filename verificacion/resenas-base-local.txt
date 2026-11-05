@@ -1,0 +1,11 @@
+antes|3|8|0
+BEGIN
+ALTER TABLE
+ALTER TABLE
+DO
+CREATE INDEX
+INSERT 0 5
+COMMIT
+despues|3|8|5
+ejemplos_con_foto|5
+tablas|12

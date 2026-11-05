@@ -1,0 +1,30 @@
+OK: Contacto no aparece para visitantes
+OK: WhatsApp enlaza al número solicitado con código de Perú
+OK: Saludo y número de contacto visibles
+OK: Contacto permanece fijo al desplazar la página
+OK: Contacto encuadrado a 1440 px
+OK: Contacto encuadrado a 375 px
+OK: Contacto encuadrado a 320 px
+OK: Contacto presente en novedades
+OK: Contacto presente en catalogo
+OK: Contacto presente en personaliza
+OK: Contacto presente en resenas
+OK: Contacto presente en contacto
+OK: Contacto presente en ofertas
+OK: Contacto excluido del perfil
+OK: Contacto no tapa el carrito
+OK: Contacto vuelve al cerrar el carrito
+OK: Contacto excluido para administradores
+OK: Estado inicial pendiente tiene su color
+OK: Confirmar pagado cambia beige a verde
+OK: Cancelar cambia el estado a rojo
+OK: Cada reseña tiene botón Editar
+OK: Editar abre una ventana con reseña y foto
+OK: Nueva foto tiene vista previa y opción de conservar la anterior
+OK: Editor encuadrado a 1440 × 900
+OK: Editor encuadrado a 375 × 812
+OK: Editor encuadrado a 812 × 375
+OK: Tab mantiene el foco dentro de la ventana
+OK: Texto e imagen guardados desde la interfaz
+OK: La tienda muestra la reseña editada
+OK: Sin errores JavaScript: 

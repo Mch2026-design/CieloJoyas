@@ -1,0 +1,70 @@
+OK: Visitante no accede a productos administrativos
+OK: Visitante no accede a reportes
+OK: Formulario requiere el token de su sesión
+OK: Contraseña incorrecta rechazada
+OK: Acceso administrativo
+OK: Identificador de sesión renovado al entrar
+OK: Cookie de sesión HttpOnly
+OK: Respuesta de acceso no expone contraseñas
+OK: Primer administrador no puede configurarse dos veces
+OK: Registro público no permite elegir ADMIN
+OK: Correo duplicado sin diferencia de mayúsculas
+OK: Segunda cuenta de cliente
+OK: Cliente no consulta reportes administrativos
+OK: Cliente no agrega ni edita productos
+OK: Cliente no elimina productos
+OK: Cuenta nueva no hereda pedidos de otros clientes
+OK: Cliente registra su pedido
+OK: Historial contiene el pedido del usuario autenticado
+OK: Correo de compra procede de la sesión
+OK: Otro cliente no ve el pedido ajeno
+OK: Cliente no accede al detalle administrativo ajeno
+OK: Administrador confirma el pago del cliente
+OK: Reporte incorpora únicamente la venta confirmada
+OK: Estadística de ventas por medio de pago
+OK: Distribución de estados coincide con pedidos
+OK: Administrador crea un producto
+OK: Administrador edita el producto
+OK: Catálogo refleja la edición
+OK: Administrador elimina el producto del catálogo
+OK: Producto eliminado desaparece de la tienda
+OK: Baja conserva referencias históricas
+OK: Cerrar sesión retira el acceso a pedidos
+{
+  "result": "OK",
+  "checks": 32,
+  "tests": [
+    "Visitante no accede a productos administrativos",
+    "Visitante no accede a reportes",
+    "Formulario requiere el token de su sesión",
+    "Contraseña incorrecta rechazada",
+    "Acceso administrativo",
+    "Identificador de sesión renovado al entrar",
+    "Cookie de sesión HttpOnly",
+    "Respuesta de acceso no expone contraseñas",
+    "Primer administrador no puede configurarse dos veces",
+    "Registro público no permite elegir ADMIN",
+    "Correo duplicado sin diferencia de mayúsculas",
+    "Segunda cuenta de cliente",
+    "Cliente no consulta reportes administrativos",
+    "Cliente no agrega ni edita productos",
+    "Cliente no elimina productos",
+    "Cuenta nueva no hereda pedidos de otros clientes",
+    "Cliente registra su pedido",
+    "Historial contiene el pedido del usuario autenticado",
+    "Correo de compra procede de la sesión",
+    "Otro cliente no ve el pedido ajeno",
+    "Cliente no accede al detalle administrativo ajeno",
+    "Administrador confirma el pago del cliente",
+    "Reporte incorpora únicamente la venta confirmada",
+    "Estadística de ventas por medio de pago",
+    "Distribución de estados coincide con pedidos",
+    "Administrador crea un producto",
+    "Administrador edita el producto",
+    "Catálogo refleja la edición",
+    "Administrador elimina el producto del catálogo",
+    "Producto eliminado desaparece de la tienda",
+    "Baja conserva referencias históricas",
+    "Cerrar sesión retira el acceso a pedidos"
+  ]
+}

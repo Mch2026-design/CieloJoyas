@@ -1,0 +1,9 @@
+OK: visible sin sesión en index del servidor local 8080
+OK: visible sin sesión en novedades del servidor local 8080
+OK: visible sin sesión en catalogo del servidor local 8080
+OK: visible sin sesión en personaliza del servidor local 8080
+OK: visible sin sesión en resenas del servidor local 8080
+OK: visible sin sesión en contacto del servidor local 8080
+OK: visible sin sesión en ofertas del servidor local 8080
+OK: visible sin sesión en login del servidor local 8080
+OK: visible sin sesión en registro del servidor local 8080

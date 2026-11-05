@@ -1,0 +1,112 @@
+OK: Visitante no accede a productos administrativos
+OK: Visitante no accede a reportes
+OK: Formulario requiere el token de su sesión
+OK: Contraseña incorrecta rechazada
+OK: Acceso administrativo
+OK: Identificador de sesión renovado al entrar
+OK: Cookie de sesión HttpOnly
+OK: Respuesta de acceso no expone contraseñas
+OK: Primer administrador no puede configurarse dos veces
+OK: Registro sin celular ni repetición de contraseña crea solo CLIENTE
+OK: Registro conserva el mínimo de 8 caracteres
+OK: Correo duplicado sin diferencia de mayúsculas
+OK: Segunda cuenta de cliente
+OK: Visitante requiere acceso: productos.html
+OK: Cliente vuelve al inicio: productos.html
+OK: Administrador abre el documento: productos.html
+OK: Visitante requiere acceso: admin-pedidos.html
+OK: Cliente vuelve al inicio: admin-pedidos.html
+OK: Administrador abre el documento: admin-pedidos.html
+OK: Visitante requiere acceso: admin-reportes.html
+OK: Cliente vuelve al inicio: admin-reportes.html
+OK: Administrador abre el documento: admin-reportes.html
+OK: Visitante requiere acceso: admin-compras.html
+OK: Cliente vuelve al inicio: admin-compras.html
+OK: Administrador abre el documento: admin-compras.html
+OK: Visitante requiere acceso: admin-posventa.html
+OK: Cliente vuelve al inicio: admin-posventa.html
+OK: Administrador abre el documento: admin-posventa.html
+OK: Visitante requiere acceso: admin-promociones.html
+OK: Cliente vuelve al inicio: admin-promociones.html
+OK: Administrador abre el documento: admin-promociones.html
+OK: Entrada antigua del panel redirige a Productos
+OK: Enlace anterior de productos sigue funcionando
+OK: Cliente no consulta reportes administrativos
+OK: Cliente no agrega ni edita productos
+OK: Cliente no elimina productos
+OK: Cuenta nueva no hereda pedidos de otros clientes
+OK: Cliente registra su pedido
+OK: Historial contiene el pedido del usuario autenticado
+OK: Correo de compra procede de la sesión
+OK: Otro cliente no ve el pedido ajeno
+OK: Cliente no accede al detalle administrativo ajeno
+OK: Administrador confirma el pago del cliente
+OK: Reporte incorpora únicamente la venta confirmada
+OK: Estadística de ventas por medio de pago
+OK: Distribución de estados coincide con pedidos
+OK: Administrador crea un producto
+OK: Administrador edita el producto
+OK: Catálogo refleja la edición
+OK: Administrador elimina el producto del catálogo
+OK: Producto eliminado desaparece de la tienda
+OK: Baja conserva referencias históricas
+OK: Cerrar sesión retira el acceso a pedidos
+{
+  "result": "OK",
+  "checks": 53,
+  "tests": [
+    "Visitante no accede a productos administrativos",
+    "Visitante no accede a reportes",
+    "Formulario requiere el token de su sesión",
+    "Contraseña incorrecta rechazada",
+    "Acceso administrativo",
+    "Identificador de sesión renovado al entrar",
+    "Cookie de sesión HttpOnly",
+    "Respuesta de acceso no expone contraseñas",
+    "Primer administrador no puede configurarse dos veces",
+    "Registro sin celular ni repetición de contraseña crea solo CLIENTE",
+    "Registro conserva el mínimo de 8 caracteres",
+    "Correo duplicado sin diferencia de mayúsculas",
+    "Segunda cuenta de cliente",
+    "Visitante requiere acceso: productos.html",
+    "Cliente vuelve al inicio: productos.html",
+    "Administrador abre el documento: productos.html",
+    "Visitante requiere acceso: admin-pedidos.html",
+    "Cliente vuelve al inicio: admin-pedidos.html",
+    "Administrador abre el documento: admin-pedidos.html",
+    "Visitante requiere acceso: admin-reportes.html",
+    "Cliente vuelve al inicio: admin-reportes.html",
+    "Administrador abre el documento: admin-reportes.html",
+    "Visitante requiere acceso: admin-compras.html",
+    "Cliente vuelve al inicio: admin-compras.html",
+    "Administrador abre el documento: admin-compras.html",
+    "Visitante requiere acceso: admin-posventa.html",
+    "Cliente vuelve al inicio: admin-posventa.html",
+    "Administrador abre el documento: admin-posventa.html",
+    "Visitante requiere acceso: admin-promociones.html",
+    "Cliente vuelve al inicio: admin-promociones.html",
+    "Administrador abre el documento: admin-promociones.html",
+    "Entrada antigua del panel redirige a Productos",
+    "Enlace anterior de productos sigue funcionando",
+    "Cliente no consulta reportes administrativos",
+    "Cliente no agrega ni edita productos",
+    "Cliente no elimina productos",
+    "Cuenta nueva no hereda pedidos de otros clientes",
+    "Cliente registra su pedido",
+    "Historial contiene el pedido del usuario autenticado",
+    "Correo de compra procede de la sesión",
+    "Otro cliente no ve el pedido ajeno",
+    "Cliente no accede al detalle administrativo ajeno",
+    "Administrador confirma el pago del cliente",
+    "Reporte incorpora únicamente la venta confirmada",
+    "Estadística de ventas por medio de pago",
+    "Distribución de estados coincide con pedidos",
+    "Administrador crea un producto",
+    "Administrador edita el producto",
+    "Catálogo refleja la edición",
+    "Administrador elimina el producto del catálogo",
+    "Producto eliminado desaparece de la tienda",
+    "Baja conserva referencias históricas",
+    "Cerrar sesión retira el acceso a pedidos"
+  ]
+}

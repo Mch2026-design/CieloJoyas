@@ -1,0 +1,33 @@
+{
+  "checks": 27,
+  "result": "OK",
+  "tests": [
+    "Recuérdame disponible y sin marcar por defecto",
+    "Compra desde el formulario guarda los datos marcados",
+    "Escritorio sin contenido recortado ni scroll 1440 × 900 {\"pedido-dialog\":{\"height\":778,\"scroll\":778},\"pedido-dialog-body\":{\"height\":584,\"scroll\":584},\"pedido-payment qr-payment\":{\"height\":584,\"scroll\":584},\"pedido-summary\":{\"height\":584,\"scroll\":584}}",
+    "Ventana fija al intentar desplazar en escritorio",
+    "Entrega y descarga PDF accesibles sin scroll",
+    "Escritorio sin contenido recortado ni scroll 1366 × 768 {\"pedido-dialog\":{\"height\":734,\"scroll\":734},\"pedido-dialog-body\":{\"height\":540,\"scroll\":540},\"pedido-payment qr-payment\":{\"height\":540,\"scroll\":540},\"pedido-summary\":{\"height\":540,\"scroll\":540}}",
+    "Ventana fija al intentar desplazar en escritorio",
+    "Entrega y descarga PDF accesibles sin scroll",
+    "Escritorio sin contenido recortado ni scroll 1280 × 640 {\"pedido-dialog\":{\"height\":606,\"scroll\":606},\"pedido-dialog-body\":{\"height\":441,\"scroll\":441},\"pedido-payment qr-payment\":{\"height\":441,\"scroll\":441},\"pedido-summary\":{\"height\":441,\"scroll\":441}}",
+    "Ventana fija al intentar desplazar en escritorio",
+    "Entrega y descarga PDF accesibles sin scroll",
+    "Pedido largo usa paginación en escritorio",
+    "Paginación muestra las siguientes piezas",
+    "Móvil permite desplazamiento 375 × 812",
+    "QR y medio de pago aparecen primero en móvil",
+    "Sin desbordamiento horizontal móvil",
+    "Móvil permite desplazamiento 320 × 640",
+    "QR y medio de pago aparecen primero en móvil",
+    "Sin desbordamiento horizontal móvil",
+    "Móvil permite desplazamiento 812 × 375",
+    "QR y medio de pago aparecen primero en móvil",
+    "Sin desbordamiento horizontal móvil",
+    "Siguiente compra autocompleta dirección y ubicación",
+    "El usuario controla nuevas actualizaciones y puede olvidar los datos",
+    "Olvidar datos funciona desde el checkout",
+    "Visitante no hereda los datos de la cuenta anterior",
+    "Sin errores JavaScript: "
+  ]
+}

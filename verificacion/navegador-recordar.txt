@@ -1,0 +1,27 @@
+OK: Recuérdame disponible y sin marcar por defecto
+OK: Compra desde el formulario guarda los datos marcados
+OK: Escritorio sin contenido recortado ni scroll 1440 × 900 {"pedido-dialog":{"height":778,"scroll":778},"pedido-dialog-body":{"height":584,"scroll":584},"pedido-payment qr-payment":{"height":584,"scroll":584},"pedido-summary":{"height":584,"scroll":584}}
+OK: Ventana fija al intentar desplazar en escritorio
+OK: Entrega y descarga PDF accesibles sin scroll
+OK: Escritorio sin contenido recortado ni scroll 1366 × 768 {"pedido-dialog":{"height":734,"scroll":734},"pedido-dialog-body":{"height":540,"scroll":540},"pedido-payment qr-payment":{"height":540,"scroll":540},"pedido-summary":{"height":540,"scroll":540}}
+OK: Ventana fija al intentar desplazar en escritorio
+OK: Entrega y descarga PDF accesibles sin scroll
+OK: Escritorio sin contenido recortado ni scroll 1280 × 640 {"pedido-dialog":{"height":606,"scroll":606},"pedido-dialog-body":{"height":441,"scroll":441},"pedido-payment qr-payment":{"height":441,"scroll":441},"pedido-summary":{"height":441,"scroll":441}}
+OK: Ventana fija al intentar desplazar en escritorio
+OK: Entrega y descarga PDF accesibles sin scroll
+OK: Pedido largo usa paginación en escritorio
+OK: Paginación muestra las siguientes piezas
+OK: Móvil permite desplazamiento 375 × 812
+OK: QR y medio de pago aparecen primero en móvil
+OK: Sin desbordamiento horizontal móvil
+OK: Móvil permite desplazamiento 320 × 640
+OK: QR y medio de pago aparecen primero en móvil
+OK: Sin desbordamiento horizontal móvil
+OK: Móvil permite desplazamiento 812 × 375
+OK: QR y medio de pago aparecen primero en móvil
+OK: Sin desbordamiento horizontal móvil
+OK: Siguiente compra autocompleta dirección y ubicación
+OK: El usuario controla nuevas actualizaciones y puede olvidar los datos
+OK: Olvidar datos funciona desde el checkout
+OK: Visitante no hereda los datos de la cuenta anterior
+OK: Sin errores JavaScript: 

@@ -1,0 +1,3 @@
+OK: compra con cuenta registrada; SMTP real aceptó un correo de Cielo Joyas a la misma cuenta remitente.
+OK: reintento conservó el pedido y no volvió a enviar el correo.
+Sin cobro y sin modificar pedidos de la tienda local. No se inspeccionó la bandeja de entrada.

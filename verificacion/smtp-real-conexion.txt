@@ -1,0 +1,1 @@
+OK: Java autenticó con SMTP real mediante TLS. No se envió ningún mensaje.

@@ -1,0 +1,32 @@
+OK: Cinco tarjetas de demostración desde PostgreSQL
+OK: Ejemplos identificados sin falsas compras verificadas
+OK: Navegación activa renombrada
+OK: Visitante recibe acceso para iniciar sesión
+OK: Cada reseña enlaza su producto
+OK: Las cinco fotos se cargan correctamente
+OK: Sin desbordamiento horizontal a 320 px
+OK: Sin desbordamiento horizontal a 375 px
+OK: Sin desbordamiento horizontal a 768 px
+OK: Sin desbordamiento horizontal a 1440 px
+OK: Foto ampliable en diálogo con fondo desenfocado
+OK: Escape cierra la foto
+OK: Filtro por pieza funciona
+OK: Enlace lleva al detalle del producto reseñado
+OK: Dirección anterior conserva acceso a Reseñas
+OK: Cuenta sin compras recibe explicación útil
+OK: Formulario ofrece únicamente la pieza comprada
+OK: El foco entra en el formulario
+OK: La navegación por teclado queda dentro de la ventana
+OK: La pieza seleccionada tiene vista previa
+OK: Vista previa de la foto seleccionada
+OK: Formulario encuadrado a 375 × 812
+OK: Formulario sin desbordamiento a 375
+OK: Formulario encuadrado a 812 × 375
+OK: Formulario sin desbordamiento a 812
+OK: Formulario encuadrado a 1440 × 1000
+OK: Formulario sin desbordamiento a 1440
+OK: Confirmación de envío y moderación
+OK: Reseña y foto guardadas en la base
+OK: Compra auténtica aprobada muestra sello verificado
+OK: Panel admin muestra fotos para moderar
+OK: Sin errores JavaScript: 

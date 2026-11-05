@@ -1,0 +1,50 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.2)
+
+2026-10-29T00:49:27.135-05:00  INFO 58877 --- [maricielojoyas] [           main] i.j.m.MaricielojoyasApplication          : Starting MaricielojoyasApplication v0.0.1-SNAPSHOT using Java 21.0.11 with PID 58877 (/Users/flavio/Documents/VScode/maricielojoyas/target/maricielojoyas-0.0.1-SNAPSHOT.jar started by flavio in /Users/flavio/Documents/VScode/maricielojoyas)
+2026-10-29T00:49:27.140-05:00  INFO 58877 --- [maricielojoyas] [           main] i.j.m.MaricielojoyasApplication          : No active profile set, falling back to 1 default profile: "default"
+2026-10-29T00:49:27.703-05:00  INFO 58877 --- [maricielojoyas] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-29T00:49:27.801-05:00  INFO 58877 --- [maricielojoyas] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 84 ms. Found 12 JPA repository interfaces.
+2026-10-29T00:49:28.539-05:00  INFO 58877 --- [maricielojoyas] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 18081 (http)
+2026-10-29T00:49:28.551-05:00  INFO 58877 --- [maricielojoyas] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-29T00:49:28.551-05:00  INFO 58877 --- [maricielojoyas] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.27]
+2026-10-29T00:49:28.567-05:00  INFO 58877 --- [maricielojoyas] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1348 ms
+2026-10-29T00:49:28.703-05:00  INFO 58877 --- [maricielojoyas] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-29T00:49:28.752-05:00  INFO 58877 --- [maricielojoyas] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.13.Final
+2026-10-29T00:49:29.136-05:00  INFO 58877 --- [maricielojoyas] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-29T00:49:29.157-05:00  INFO 58877 --- [maricielojoyas] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-29T00:49:29.241-05:00  INFO 58877 --- [maricielojoyas] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5ae66c98
+2026-10-29T00:49:29.245-05:00  INFO 58877 --- [maricielojoyas] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-29T00:49:29.343-05:00  INFO 58877 --- [maricielojoyas] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://127.0.0.1:55439/cielo_productos_pruebas]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 18.4
+	Default catalog/schema: cielo_productos_pruebas/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-29T00:49:30.284-05:00  INFO 58877 --- [maricielojoyas] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-29T00:49:30.339-05:00  INFO 58877 --- [maricielojoyas] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-29T00:49:30.393-05:00  INFO 58877 --- [maricielojoyas] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-29T00:49:31.332-05:00  INFO 58877 --- [maricielojoyas] [           main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-10-29T00:49:31.615-05:00  INFO 58877 --- [maricielojoyas] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 18081 (http) with context path '/'
+2026-10-29T00:49:31.633-05:00  INFO 58877 --- [maricielojoyas] [           main] i.j.m.MaricielojoyasApplication          : Started MaricielojoyasApplication in 4.863 seconds (process running for 5.51)
+2026-10-29T00:50:03.557-05:00  INFO 58877 --- [maricielojoyas] [io-18081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-29T00:50:03.557-05:00  INFO 58877 --- [maricielojoyas] [io-18081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-29T00:50:03.559-05:00  INFO 58877 --- [maricielojoyas] [io-18081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-10-29T00:50:43.709-05:00  INFO 58877 --- [maricielojoyas] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-29T00:50:43.715-05:00  INFO 58877 --- [maricielojoyas] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-10-29T00:50:43.723-05:00  INFO 58877 --- [maricielojoyas] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-10-29T00:50:43.726-05:00  INFO 58877 --- [maricielojoyas] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-29T00:50:43.732-05:00  INFO 58877 --- [maricielojoyas] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

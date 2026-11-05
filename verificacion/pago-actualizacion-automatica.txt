@@ -1,0 +1,1 @@
+OK: el certificado y el estado se actualizan automáticamente sin recargar ni pulsar Actualizar.

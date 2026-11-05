@@ -1,0 +1,2 @@
+OK: Login Java con administrador creado por migración 02
+OK: Acceso administrativo al catálogo

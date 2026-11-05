@@ -1,0 +1,12 @@
+{
+  "result": "OK",
+  "registered_account": true,
+  "recipient": "misma cuenta del remitente SMTP configurado",
+  "order_saved_before_sending": true,
+  "smtp_accepted": true,
+  "repeated_request_same_order": true,
+  "sent_messages": 1,
+  "database": "temporal, eliminada al terminar",
+  "payment": "pendiente, sin cobro automático",
+  "inbox_delivery": "No se ha inspeccionado la bandeja del destinatario"
+}

@@ -1,0 +1,30 @@
+BEGIN
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+ALTER TABLE
+CREATE INDEX
+INSERT 0 1
+COMMIT
+     nombre      |        email         |  rol  | activo 
+-----------------+----------------------+-------+--------
+ Maricielo Girao | admincielo@gmail.com | ADMIN | t
+(1 row)
+
+BEGIN
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+ALTER TABLE
+CREATE INDEX
+INSERT 0 1
+COMMIT
+     nombre      |        email         |  rol  | activo 
+-----------------+----------------------+-------+--------
+ Maricielo Girao | admincielo@gmail.com | ADMIN | t
+(1 row)
+
