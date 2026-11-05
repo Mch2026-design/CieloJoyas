@@ -1,0 +1,7 @@
+target/
+.git/
+.vscode/
+verificacion/
+tests/
+output/
+application-local.properties
