@@ -1,0 +1,5 @@
+.supply-section{display:grid;grid-template-columns:minmax(180px,1fr) minmax(0,2fr);gap:24px;padding:24px 0;border-top:1px solid var(--line)}
+.supply-material h3{font-size:20px;line-height:1.4;margin:0 0 8px}.supply-material span{font-size:14px;color:var(--muted)}
+.supply-vendors{min-width:0}.supply-vendors>.export-button{margin-top:16px}.supply-vendors .management-row:first-child{padding-top:0}.supply-vendors .management-row p{margin:6px 0;overflow-wrap:anywhere}
+#vendor-form{scroll-margin-top:100px}#vendor-form input,#vendor-form select{font-size:16px;min-height:44px;width:100%}#vendor-form label{display:grid;gap:8px}#vendor-form .check-field{display:flex}#vendor-form .check-field input{width:20px}
+@media(max-width:600px){.supply-section{grid-template-columns:1fr;gap:16px}.supply-vendors{padding-left:16px;border-left:2px solid var(--line)}}

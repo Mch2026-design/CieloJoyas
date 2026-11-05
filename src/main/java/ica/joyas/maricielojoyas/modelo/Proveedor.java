@@ -26,6 +26,12 @@ public class Proveedor {
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
 
+    @Column(name = "categoria_insumo", nullable = false, length = 30)
+    private String categoriaInsumo = "otros";
+
+    public String getCategoriaInsumo() { return categoriaInsumo; }
+    public void setCategoriaInsumo(String categoriaInsumo) { this.categoriaInsumo = categoriaInsumo; }
+
     public Proveedor() {}
 
     public Long getId() { return id; }
