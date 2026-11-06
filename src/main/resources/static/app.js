@@ -213,9 +213,11 @@ $('#checkout').addEventListener('click',async()=>{try{if(!await verifyCartOwner(
 $('#checkout-form').addEventListener('change',e=>{if(e.target.name==='paymentMethod')updateSummary();});
 $('#checkout-form').addEventListener('submit',async e=>{
   e.preventDefault();if(submittingOrder)return;
+  // currentTarget se borra al terminar el evento: conservarlo antes del await.
+  const form=e.currentTarget;
   try{if(!await verifyCartOwner())return;}catch(error){$('#checkout-error').textContent=error.message;return;}
   if(submittingOrder)return;
-  const form=e.currentTarget;if(!CieloControls.validate(form))return;
+  if(!CieloControls.validate(form))return;
   const d=Object.fromEntries(new FormData(form)),button=form.querySelector('[type="submit"]');
   $('#checkout-error').textContent='';submittingOrder=true;
   const fields=[...form.elements,...document.querySelectorAll('#close-checkout,#checkout-apply-coupon')].filter(el=>el!==button);
