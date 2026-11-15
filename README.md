@@ -54,8 +54,10 @@ Ejecuta la migración antes de iniciar para incorporar índices y restricciones.
 | `admin-compras.html` | Compras y proveedores |
 | `admin-posventa.html` | Garantías, moderación y edición de texto/fotos de reseñas |
 | `admin-promociones.html` | Cupones y clientas suscritas |
-| `login.html` | Acceso de clientes y administradores |
+| `admin-carrusel.html` | Panel desplegable de hasta 5 carruseles para la portada (productos, velocidad y dirección) |
+| `login.html` | Acceso de clientes y administradores (incluye Google y recuperación de contraseña) |
 | `registro.html` | Creación de cuentas de clientes |
+| `recuperar.html` | Restablecimiento de contraseña mediante enlace de Supabase Auth |
 | `configurar-admin.html` | Configuración local del primer administrador |
 | `cuenta.html` | Historial y detalle de los pedidos de la cuenta |
 
@@ -208,3 +210,19 @@ El aviso distingue un pedido registrado de un pago confirmado. La tienda verific
 La migración `sql/migracion_03_correo_pedidos.sql` se puede repetir y mantiene las 12 tablas. Solo añade la columna nullable `correo_enviado_en` si falta. Para una instalación nueva, la 01 ya incluye esa columna. No vuelvas a ejecutar la 01 sobre tu instalación únicamente para habilitar los correos.
 
 Verificación actual y vista previa del mensaje: `verificacion/CORREO_PEDIDOS.md`. Las pruebas anteriores de controles permanecen en `verificacion/CONTROLES_CIELO.md`.
+
+## Autenticación con Google, recuperación y sincronización con Supabase
+
+`acceso/login.html` y `acceso/recuperar.html` integran acceso con Google y recuperación de contraseña mediante **Supabase Auth** (requiere `SUPABASE_URL` y `SUPABASE_ANON_KEY` en el entorno). Desde «¿Olvidaste tu contraseña?» se abre el panel de envío de correo con botón para regresar al inicio de sesión; al abrir el enlace de recuperación, `recuperar.html` valida una nueva contraseña segura (mínimo 12 caracteres, una mayúscula, un número y un carácter especial) con confirmación y redirige al inicio. Los nuevos registros también se sincronizan con Supabase Auth.
+
+## Carruseles configurables en portada
+
+Debajo de las categorías de `tienda/index.html` se muestran hasta **5 carruseles continuos** configurables desde `admin/admin-carrusel.html` (`CarruselService` + `/api/carousel` y `/api/admin/carousel`). Cada carrusel se administra desde un panel desplegable independiente (con **Carrusel 1** cerrado por defecto), permite agregar o quitar carruseles adicionales (2 al 5), elegir al menos **8 productos**, ajustar la **velocidad** (10–180 segundos por vuelta) y definir la **dirección** (`izquierda` o `derecha`).
+
+## Tema oscuro y selector persistente
+
+Todas las vistas públicas, de acceso, cuenta, reseñas y administración incorporan `compartido/tema.js` y `compartido/tema-oscuro.css`. El botón de cambio de tema se ubica en el encabezado inmediatamente a la izquierda del icono de cuenta/inicio de sesión: inicia siempre en **tema claro** la primera vez (icono de **sol**) y al activarse cambia a **tema oscuro** (icono de **luna**), guardando la preferencia del usuario en `localStorage` (`cielo_theme`).
+
+## Organización por módulos estáticos y favicon
+
+Los recursos estáticos en `src/main/resources/static/` están organizados por módulos (`tienda/`, `acceso/`, `cuenta/`, `resenas/`, `admin/` y `compartido/`), conservando redirecciones compatibles en `AccesoConfig.java`. El favicon (`assets/favicon.webp`) cuenta con un marco sólido de **13 px** (`#26221f`), y las 5 reseñas de demostración mantienen sus fotografías `.webp` y descripciones vinculadas a su producto correspondiente.
