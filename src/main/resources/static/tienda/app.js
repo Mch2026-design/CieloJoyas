@@ -3,7 +3,7 @@ const {api, esc, money, busy} = Cielo;
 const $ = selector => document.querySelector(selector);
 const cartAnnouncement=document.createElement('span');cartAnnouncement.className='sr-only';cartAnnouncement.setAttribute('role','status');cartAnnouncement.setAttribute('aria-live','polite');document.body.append(cartAnnouncement);
 let announcedCartCount=null;
-let products = [], categories = [], coupon = null, locations = [];
+let products = [], categories = [], coupon = null, locations = [], carouselConfig = null;
 let requestId = crypto.randomUUID();
 let submittingOrder=false;
 let locationsReadyResolve;const locationsReady=new Promise(resolve=>locationsReadyResolve=resolve);
@@ -145,10 +145,18 @@ function renderProducts() {
 function renderHome() {
   const marqueeWrap = $('#home-marquee-section'), marqueeTrack = $('#home-marquee-track');
   if (marqueeWrap && marqueeTrack) {
-    const picked = products.slice(0, 20);
+    const cfg = carouselConfig || {};
+    const wantedIds = Array.isArray(cfg.productIds) ? cfg.productIds.map(Number) : [];
+    const byId = new Map(products.map(p => [p.id, p]));
+    let picked = wantedIds.map(id => byId.get(id)).filter(Boolean);
+    if (!picked.length) picked = products.slice(0, 20);
     if (picked.length) {
       const cardHtml = (p, duplicate) => `<button type="button" class="home-marquee-card" data-view="${p.id}"${duplicate ? ' aria-hidden="true" tabindex="-1"' : ''}><img src="${esc(p.src)}" alt="${duplicate ? '' : esc(p.alt)}" width="210" height="262" loading="lazy"><span class="home-marquee-meta"><small>${esc(p.category)}</small><strong>${esc(p.name)}</strong><b>${money(p.price)}</b></span></button>`;
       marqueeTrack.innerHTML = picked.map(p => cardHtml(p, false)).join('') + picked.map(p => cardHtml(p, true)).join('');
+      const speed = Math.max(10, Math.min(180, Number(cfg.speedSeconds) || 55));
+      const direction = cfg.direction === 'right' ? 'reverse' : 'normal';
+      marqueeTrack.style.animationDuration = `${speed}s`;
+      marqueeTrack.style.animationDirection = direction;
       marqueeWrap.hidden = false;
     } else {
       marqueeWrap.hidden = true;
@@ -316,7 +324,10 @@ for(const id of ['guarantee-form','newsletter-form']){const publicForm=$('#'+id)
 function renderPolicy(){$('#policy-content').innerHTML=$('#policy-select').value==='returns'?'<h3>Cambios</h3><p>Contacta a la tienda con tu número de pedido y comprobante para consultar las condiciones de cambio antes de enviar una pieza.</p>':'<h3>Garantías y devoluciones</h3><p>Usa el formulario de garantía para describir un defecto e incluir evidencia. La tienda evaluará tu solicitud y coordinará contigo los siguientes pasos.</p><p>Los pedidos se registran con pago pendiente. El envío se cotiza por separado; el total mostrado corresponde a las piezas y al descuento aplicado.</p>';}
 for(const id of ['open-policies','open-policies-checkout'])$('#'+id).addEventListener('click',e=>{e.preventDefault();renderPolicy();show($('#policy-modal'));});$('#policy-select').addEventListener('change',renderPolicy);
 async function loadProducts(){
-  products=(await api('/products')).map(p=>({...p,price:Number(p.price)}));
+  [products, carouselConfig] = await Promise.all([
+    api('/products').then(rows => rows.map(p => ({ ...p, price: Number(p.price) }))),
+    $('#home-marquee-track') ? api('/carousel').catch(() => null) : Promise.resolve(null)
+  ]);
   renderProducts();renderHome();renderCart();
 }
 async function init(){

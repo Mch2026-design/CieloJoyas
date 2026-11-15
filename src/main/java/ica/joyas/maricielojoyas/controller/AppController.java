@@ -40,6 +40,7 @@ public class AppController {
     private final Ubigeos ubigeos;
     private final AvisosPedido avisosPedido;
     private final GoogleAuthService googleAuth;
+    private final CarruselService carrusel;
     @Value("${cielo.whatsapp:}") private String whatsapp;
     @Value("${cielo.payment.cci:00000000000000000000}") private String paymentCci;
 
@@ -62,7 +63,8 @@ public class AppController {
             AccesoService acceso,
             Ubigeos ubigeos,
             AvisosPedido avisosPedido,
-            GoogleAuthService googleAuth) {
+            GoogleAuthService googleAuth,
+            CarruselService carrusel) {
         this.usuarios = usuarios;
         this.clientes = clientes;
         this.categorias = categorias;
@@ -81,6 +83,7 @@ public class AppController {
         this.ubigeos = ubigeos;
         this.avisosPedido = avisosPedido;
         this.googleAuth = googleAuth;
+        this.carrusel = carrusel;
     }
 
     private static Map<String, Object> vista(Object... pares) {
@@ -113,6 +116,8 @@ public class AppController {
                 "quantity", d.getCantidad(), "price", d.getPrecioUnitario(), "engraving", d.getGrabado(), "size", d.getTalla())).toList());
     }
     @GetMapping("/auth/me") public Map<String, Object> miSesion(HttpServletRequest request) { return acceso.sesion(request); }
+    @GetMapping("/carousel") public Map<String, Object> verCarrusel() { return carrusel.obtener(); }
+    @PutMapping("/admin/carousel") public Map<String, Object> guardarCarrusel(@RequestBody Map<String, Object> datos) { return carrusel.guardar(datos); }
     @GetMapping("/auth/google/config") public Map<String, Object> googleConfig() {
         return vista("enabled", googleAuth.habilitado(), "supabaseUrl", googleAuth.getSupabaseUrl());
     }

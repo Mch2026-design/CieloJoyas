@@ -29,7 +29,7 @@ class AppControllerReporteTests {
                 mock(DetallePedidoRepository.class), mock(PagoRepository.class), mock(ProveedorRepository.class),
                 mock(CompraRepository.class), mock(GarantiaRepository.class), mock(ResenaRepository.class),
                 mock(PedidoService.class), reporteDAO, mock(AccesoService.class),
-                mock(Ubigeos.class), mock(AvisosPedido.class), mock(GoogleAuthService.class));
+                mock(Ubigeos.class), mock(AvisosPedido.class), mock(GoogleAuthService.class), mock(CarruselService.class));
     }
 
     @Test

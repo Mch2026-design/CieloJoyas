@@ -38,6 +38,7 @@ public class AccesoConfig implements WebMvcConfigurer {
         registry.addViewController("/admin-posventa.html").setViewName("forward:/admin/admin-posventa.html");
         registry.addViewController("/admin-productos.html").setViewName("forward:/admin/admin-productos.html");
         registry.addViewController("/admin-promociones.html").setViewName("forward:/admin/admin-promociones.html");
+        registry.addViewController("/admin-carrusel.html").setViewName("forward:/admin/admin-carrusel.html");
         registry.addViewController("/admin-reportes.html").setViewName("forward:/admin/admin-reportes.html");
     }
     @Override public void addInterceptors(InterceptorRegistry registry) {
