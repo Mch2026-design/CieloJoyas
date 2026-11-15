@@ -11,9 +11,17 @@
 <style>
 .carousel-controls-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:18px}
 .carousel-speed-row{display:flex;align-items:center;gap:12px}
-.carousel-speed-row input[type=range]{flex:1}
+.carousel-speed-range{flex:1;accent-color:#7f533f;cursor:pointer;height:6px;background:transparent;-webkit-appearance:none;appearance:none}
+.carousel-speed-range::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:#e8dfd6}
+.carousel-speed-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;margin-top:-6px;border-radius:50%;background:#7f533f;border:2px solid #fff;box-shadow:0 1px 4px rgba(40,24,16,.25);cursor:pointer}
+.carousel-speed-range::-moz-range-track{height:6px;border-radius:999px;background:#e8dfd6}
+.carousel-speed-range::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#7f533f;border:2px solid #fff;box-shadow:0 1px 4px rgba(40,24,16,.25);cursor:pointer}
+.carousel-speed-num{width:76px;min-height:46px;padding:8px 10px;border:1px solid #d8c8b8;border-radius:10px;background:#fff;text-align:center;font:600 15px var(--sans);color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s}
+.carousel-speed-num:focus{border-color:#7f533f;box-shadow:0 0 0 3px rgba(127,83,63,.12)}
 .carousel-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:14px 0}
-.carousel-toolbar input[type=search]{min-width:240px;flex:1;max-width:360px}
+.carousel-search-input{min-width:240px;flex:1;max-width:360px;min-height:46px;padding:10px 14px;border:1px solid #d8c8b8;border-radius:10px;background:#fff;font:inherit;font-size:15px;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s}
+.carousel-search-input::placeholder{color:var(--muted)}
+.carousel-search-input:focus{border-color:#7f533f;box-shadow:0 0 0 3px rgba(127,83,63,.12)}
 .carousel-product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;max-height:520px;overflow-y:auto;padding:4px 2px}
 .carousel-item-option{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line,#e7dfd6);border-radius:10px;background:#fff;cursor:pointer;transition:border-color .15s,background-color .15s}
 .carousel-item-option:has(input:checked){border-color:#7f533f;background:#fcf8f4}
@@ -22,8 +30,25 @@
 .carousel-item-info strong{font-size:14px;line-height:1.25;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .carousel-item-info small{font-size:12px;color:var(--muted)}
 .carousel-actions-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
-.carousel-secondary-btn{padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.carousel-secondary-btn{padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--ink);font:inherit;font-size:14px;cursor:pointer;text-decoration:none}
 .carousel-secondary-btn:hover{background:#f8f4ef}
+.carousel-accordion{border:1px solid #e7dfd6;border-radius:12px;background:#fff;margin-bottom:14px;overflow:hidden}
+.carousel-accordion summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;cursor:pointer;list-style:none;background:#fcfaf7;user-select:none;transition:background-color .15s}
+.carousel-accordion summary::-webkit-details-marker{display:none}
+.carousel-accordion[open] summary{border-bottom:1px solid #e7dfd6;background:#f8f3ed}
+.carousel-accordion-title{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0}
+.carousel-accordion-title strong{font-family:var(--serif);font-size:20px;font-weight:500;color:var(--ink)}
+.carousel-pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#efe6dc;color:#624030;font-size:12px;font-weight:600}
+.carousel-summary-right{display:flex;align-items:center;gap:10px;flex:none}
+.carousel-chevron{width:18px;height:18px;color:#7f533f;transition:transform .2s ease;flex:none}
+.carousel-accordion[open] .carousel-chevron{transform:rotate(180deg)}
+.carousel-accordion-body{padding:20px}
+.carousel-remove-btn{padding:6px 11px;border:1px solid #dfc5be;border-radius:8px;background:#fff;color:#8c3a2b;font:inherit;font-size:13px;font-weight:500;cursor:pointer}
+.carousel-remove-btn:hover{background:#fdf2f0}
+.carousel-add-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0 18px}
+.carousel-add-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1px dashed #7f533f;border-radius:10px;background:#fcf8f4;color:#624030;font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background-color .15s}
+.carousel-add-btn:hover:not(:disabled){background:#f5ece3}
+.carousel-add-btn:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body class="admin-body" data-admin-page="carrusel">
@@ -33,38 +58,19 @@
   <p data-session-error id="carousel-error" class="form-error" role="alert"></p>
   <section id="dashboard" hidden>
     <div class="report-title">
-      <div><span class="eyebrow">ADMINISTRACIÓN CIELO</span><h1>Panel de Carrusel</h1><p>Elige qué productos aparecen en el carrusel de inicio, su velocidad y dirección (mínimo 8 productos).</p></div>
+      <div><span class="eyebrow">ADMINISTRACIÓN CIELO</span><h1>Panel de Carrusel</h1><p>Configura hasta 5 carruseles para la portada, con su velocidad, dirección y productos (mínimo 8 productos por carrusel).</p></div>
     </div>
     <p id="carousel-message" role="status" aria-live="polite"></p>
     <section class="report-card">
-      <h2>Movimiento del carrusel</h2>
+      <h2>Carruseles de portada</h2>
       <form id="carousel-form">
-        <div class="carousel-controls-grid">
-          <label>Dirección de desplazamiento
-            <select id="carousel-direction" name="direction">
-              <option value="left">Hacia la izquierda (←)</option>
-              <option value="right">Hacia la derecha (→)</option>
-            </select>
-          </label>
-          <label>Velocidad (segundos por vuelta: <b id="carousel-speed-label">55s</b>)
-            <div class="carousel-speed-row">
-              <input id="carousel-speed" name="speedSeconds" type="range" min="10" max="180" step="5" value="55">
-              <input id="carousel-speed-num" type="number" min="10" max="180" value="55" style="width:76px" aria-label="Segundos por vuelta">
-            </div>
-            <small>Menor número = más rápido · Mayor número = más lento</small>
-          </label>
+        <div id="carousel-list" aria-live="polite"></div>
+        <div class="carousel-add-row">
+          <button type="button" id="carousel-add-btn" class="carousel-add-btn">+ Agregar carrusel</button>
+          <small id="carousel-limit-note" style="color:var(--muted)">1 de 5 carruseles configurados</small>
         </div>
-        <h2>Productos del carrusel <small id="carousel-count">(0 seleccionados · mínimo 8)</small></h2>
-        <div class="carousel-toolbar">
-          <input id="carousel-search" type="search" placeholder="Buscar producto o categoría…">
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button type="button" id="carousel-pick-20" class="carousel-secondary-btn">Elegir 20 primeros</button>
-            <button type="button" id="carousel-clear" class="carousel-secondary-btn">Limpiar selección</button>
-          </div>
-        </div>
-        <div id="carousel-products" class="carousel-product-grid" aria-live="polite"></div>
         <div class="carousel-actions-row">
-          <button class="button" type="submit">Guardar carrusel</button>
+          <button class="button" type="submit">Guardar carruseles</button>
           <a class="carousel-secondary-btn" href="/tienda/index.html" target="_blank" rel="noopener">Ver portada</a>
         </div>
       </form>

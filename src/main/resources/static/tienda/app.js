@@ -143,20 +143,26 @@ function renderProducts() {
   $('#product-grid').innerHTML = rows.map(p=>card(p,page==='personaliza'?3:2)).join(''); $('#result-count').textContent = `${rows.length} ${rows.length===1?'pieza':'piezas'}`; $('#show-filter-results').textContent = `Ver ${rows.length} ${rows.length===1?'artículo':'artículos'}`; $('#empty-state').hidden = rows.length > 0;
 }
 function renderHome() {
-  const marqueeWrap = $('#home-marquee-section'), marqueeTrack = $('#home-marquee-track');
-  if (marqueeWrap && marqueeTrack) {
+  const marqueeWrap = $('#home-marquee-section');
+  if (marqueeWrap) {
     const cfg = carouselConfig || {};
-    const wantedIds = Array.isArray(cfg.productIds) ? cfg.productIds.map(Number) : [];
+    const list = Array.isArray(cfg.carousels) && cfg.carousels.length
+      ? cfg.carousels
+      : [{ productIds: cfg.productIds || [], speedSeconds: cfg.speedSeconds || 55, direction: cfg.direction || 'left' }];
     const byId = new Map(products.map(p => [p.id, p]));
-    let picked = wantedIds.map(id => byId.get(id)).filter(Boolean);
-    if (!picked.length) picked = products.slice(0, 20);
-    if (picked.length) {
-      const cardHtml = (p, duplicate) => `<button type="button" class="home-marquee-card" data-view="${p.id}"${duplicate ? ' aria-hidden="true" tabindex="-1"' : ''}><img src="${esc(p.src)}" alt="${duplicate ? '' : esc(p.alt)}" width="210" height="262" loading="lazy"><span class="home-marquee-meta"><small>${esc(p.category)}</small><strong>${esc(p.name)}</strong><b>${money(p.price)}</b></span></button>`;
-      marqueeTrack.innerHTML = picked.map(p => cardHtml(p, false)).join('') + picked.map(p => cardHtml(p, true)).join('');
-      const speed = Math.max(10, Math.min(180, Number(cfg.speedSeconds) || 55));
-      const direction = cfg.direction === 'right' ? 'reverse' : 'normal';
-      marqueeTrack.style.animationDuration = `${speed}s`;
-      marqueeTrack.style.animationDirection = direction;
+    const cardHtml = (p, duplicate) => `<button type="button" class="home-marquee-card" data-view="${p.id}"${duplicate ? ' aria-hidden="true" tabindex="-1"' : ''}><img src="${esc(p.src)}" alt="${duplicate ? '' : esc(p.alt)}" width="210" height="262" loading="lazy"><span class="home-marquee-meta"><small>${esc(p.category)}</small><strong>${esc(p.name)}</strong><b>${money(p.price)}</b></span></button>`;
+    const tracksHtml = list.slice(0, 5).map(item => {
+      const wantedIds = Array.isArray(item.productIds) ? item.productIds.map(Number) : [];
+      let picked = wantedIds.map(id => byId.get(id)).filter(Boolean);
+      if (!picked.length) picked = products.slice(0, 20);
+      if (!picked.length) return '';
+      const speed = Math.max(10, Math.min(180, Number(item.speedSeconds) || 55));
+      const direction = item.direction === 'right' ? 'reverse' : 'normal';
+      const cards = picked.map(p => cardHtml(p, false)).join('') + picked.map(p => cardHtml(p, true)).join('');
+      return `<div class="home-marquee"><div class="home-marquee-track" style="animation-duration:${speed}s;animation-direction:${direction}">${cards}</div></div>`;
+    }).filter(Boolean).join('');
+    if (tracksHtml) {
+      marqueeWrap.innerHTML = tracksHtml;
       marqueeWrap.hidden = false;
     } else {
       marqueeWrap.hidden = true;

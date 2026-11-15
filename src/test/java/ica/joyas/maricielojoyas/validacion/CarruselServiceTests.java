@@ -60,19 +60,34 @@ class CarruselServiceTests {
         ProductoRepository repo = mock(ProductoRepository.class);
         when(repo.findAll()).thenReturn(productosActivos(12));
         when(jdbc.queryForList(anyString())).thenReturn(List.of(Map.of(
+                "id", 1L,
                 "productos_ids", "1,2,3,4,5,6,7,8",
                 "velocidad_segundos", 30,
                 "direccion", "right")));
 
         CarruselService service = new CarruselService(jdbc, repo);
         Map<String, Object> res = service.guardar(Map.of(
-                "productIds", List.of(1, 2, 3, 4, 5, 6, 7, 8),
-                "speedSeconds", 30,
-                "direction", "right"));
+                "carousels", List.of(Map.of(
+                        "productIds", List.of(1, 2, 3, 4, 5, 6, 7, 8),
+                        "speedSeconds", 30,
+                        "direction", "right"))));
 
         assertEquals(8, ((List<?>) res.get("productIds")).size());
         assertEquals(30, res.get("speedSeconds"));
         assertEquals("right", res.get("direction"));
-        verify(jdbc).update(anyString(), eq("1,2,3,4,5,6,7,8"), eq(30), eq("right"));
+        verify(jdbc).update(anyString(), eq(1L), eq("1,2,3,4,5,6,7,8"), eq(30), eq("right"));
+    }
+
+    @Test
+    void guardarRechazaMasDeCincoCarruseles() {
+        JdbcTemplate jdbc = mock(JdbcTemplate.class);
+        ProductoRepository repo = mock(ProductoRepository.class);
+        when(repo.findAll()).thenReturn(productosActivos(12));
+        CarruselService service = new CarruselService(jdbc, repo);
+
+        Map<String, Object> uno = Map.of("productIds", List.of(1, 2, 3, 4, 5, 6, 7, 8), "speedSeconds", 55, "direction", "left");
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.guardar(Map.of("carousels", List.of(uno, uno, uno, uno, uno, uno))));
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
     }
 }

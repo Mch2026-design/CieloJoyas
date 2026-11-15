@@ -135,7 +135,7 @@
 }
 
 /* Carrusel continuo hacia la izquierda en inicio (20 piezas del catálogo). */
-.home-marquee-section{padding:24px 0 12px;background:var(--cream,#f7f3ef);border-bottom:1px solid var(--line,#ebe5df)}
+.home-marquee-section{display:grid;gap:10px;padding:24px 0 12px;background:var(--cream,#f7f3ef);border-bottom:1px solid var(--line,#ebe5df)}
 .home-marquee{overflow:hidden;position:relative;-webkit-mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent)}
 .home-marquee-track{display:flex;gap:18px;width:max-content;padding:8px 0 18px;animation:cielo-marquee 60s linear infinite;will-change:transform}
 .home-marquee:hover .home-marquee-track,.home-marquee:focus-within .home-marquee-track{animation-play-state:paused}
