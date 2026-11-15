@@ -143,6 +143,17 @@ function renderProducts() {
   $('#product-grid').innerHTML = rows.map(p=>card(p,page==='personaliza'?3:2)).join(''); $('#result-count').textContent = `${rows.length} ${rows.length===1?'pieza':'piezas'}`; $('#show-filter-results').textContent = `Ver ${rows.length} ${rows.length===1?'artículo':'artículos'}`; $('#empty-state').hidden = rows.length > 0;
 }
 function renderHome() {
+  const marqueeWrap = $('#home-marquee-section'), marqueeTrack = $('#home-marquee-track');
+  if (marqueeWrap && marqueeTrack) {
+    const picked = products.slice(0, 20);
+    if (picked.length) {
+      const cardHtml = (p, duplicate) => `<button type="button" class="home-marquee-card" data-view="${p.id}"${duplicate ? ' aria-hidden="true" tabindex="-1"' : ''}><img src="${esc(p.src)}" alt="${duplicate ? '' : esc(p.alt)}" width="210" height="262" loading="lazy"><span class="home-marquee-meta"><small>${esc(p.category)}</small><strong>${esc(p.name)}</strong><b>${money(p.price)}</b></span></button>`;
+      marqueeTrack.innerHTML = picked.map(p => cardHtml(p, false)).join('') + picked.map(p => cardHtml(p, true)).join('');
+      marqueeWrap.hidden = false;
+    } else {
+      marqueeWrap.hidden = true;
+    }
+  }
   const newest = $('#new-products');
   if(newest)newest.innerHTML = [...products].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)||b.id-a.id).slice(0,page==='novedades'?8:4).map(p=>card(p,page==='novedades'?2:3)).join('');
   const favorite = $('#favorite-products');
