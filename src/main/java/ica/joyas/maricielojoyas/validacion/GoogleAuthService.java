@@ -1,5 +1,7 @@
 package ica.joyas.maricielojoyas.validacion;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ public class GoogleAuthService {
 
     public record PerfilGoogle(String email, String nombres, String apellidos) {}
 
+    private static final Logger log = LoggerFactory.getLogger(GoogleAuthService.class);
     private final String supabaseUrl;
     private final String supabaseAnonKey;
     private final RestClient restClient;
@@ -135,6 +138,31 @@ public class GoogleAuthService {
         } catch (RestClientException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "El enlace de recuperación expiró o no es válido. Solicita uno nuevo.");
+        }
+    }
+
+    public void registrarEnSupabase(String email, String password, String nombres, String apellidos) {
+        if (!habilitado() || email == null || email.isBlank() || password == null || password.isBlank()) {
+            return;
+        }
+        String nombreCompleto = ((nombres == null ? "" : nombres.trim()) + " "
+                + (apellidos == null ? "" : apellidos.trim())).trim();
+        try {
+            restClient.post()
+                    .uri(supabaseUrl + "/auth/v1/signup")
+                    .header("apikey", supabaseAnonKey)
+                    .header("Content-Type", "application/json")
+                    .body(Map.of(
+                            "email", email,
+                            "password", password,
+                            "data", Map.of(
+                                    "given_name", nombres == null ? "" : nombres.trim(),
+                                    "family_name", apellidos == null ? "" : apellidos.trim(),
+                                    "full_name", nombreCompleto)))
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RestClientException ex) {
+            log.warn("No se pudo sincronizar el registro en Supabase Auth ({})", ex.getClass().getSimpleName());
         }
     }
 }

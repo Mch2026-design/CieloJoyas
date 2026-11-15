@@ -151,7 +151,13 @@ public class AppController {
         return acceso.entrar(acceso.autenticar(datos, request.getSession()), request);
     }
     @PostMapping("/auth/register") public Map<String, Object> registrar(@RequestBody Map<String, Object> datos, HttpServletRequest request) {
-        return acceso.entrar(acceso.registrar(datos, false), request);
+        Usuario usuario = acceso.registrar(datos, false);
+        if (datos.get("password") instanceof String clave) {
+            String nombres = datos.get("firstName") instanceof String fn ? fn : usuario.getNombre();
+            String apellidos = datos.get("lastName") instanceof String ln ? ln : "";
+            googleAuth.registrarEnSupabase(usuario.getEmail(), clave, nombres, apellidos);
+        }
+        return acceso.entrar(usuario, request);
     }
     @PostMapping("/auth/setup") public Map<String, Object> configurar(@RequestBody Map<String, Object> datos, HttpServletRequest request) {
         if (!acceso.esLocal(request)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Configura la administración desde el equipo de la tienda.");
