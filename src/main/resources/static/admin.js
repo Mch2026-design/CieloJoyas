@@ -112,4 +112,48 @@ $('#orders-table')?.addEventListener('click',async e=>{const b=e.target.closest(
 $('#close-order')?.addEventListener('click',()=>$('#order-dialog').close());
 $('#edit-order-form')?.addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget;await busy(form.querySelector('button'),async()=>{try{await api('/admin/orders/'+form.elements.id.value,{method:'PUT',body:formData(form)});$('#order-dialog').close();await loadReport();message('Datos de entrega actualizados.');}catch(error){$('#edit-order-error').textContent=error.message;}});});
 $('#export-csv')?.addEventListener('click',()=>{if(!currentReport)return;const cell=v=>'"'+String(v??'').replace(/^[=+@-]/,"'$&").replace(/"/g,'""')+'"';const rows=[['Pedido','Cliente','Correo','Fecha','Estado','Pago','Total'],...currentReport.recent.map(o=>[o.id,o.customer,o.email,o.createdAt,o.status,o.paymentStatus,o.total])];const url=URL.createObjectURL(new Blob(['\ufeff'+rows.map(row=>row.map(cell).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='cielo-pedidos.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+async function descargarExcel(button,endpoint,fallbackName){
+ const days=$('#period')?.value||'30';
+ const label=button.textContent;
+ if($('#report-error'))$('#report-error').textContent='';
+ await busy(button,async()=>{
+  button.textContent='Generando Excel…';
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),30000);
+  try{
+   const response=await fetch(`/api${endpoint}?days=${encodeURIComponent(days)}`,{
+    credentials:'same-origin',
+    cache:'no-store',
+    signal:controller.signal,
+    headers:{Accept:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/json'}
+   });
+   if(!response.ok){
+    const data=await response.json().catch(()=>({}));
+    const err=Error(data.error||'No se pudo exportar el archivo Excel.');
+    err.status=response.status;
+    throw err;
+   }
+   const blob=await response.blob();
+   const match=/filename="?([^";]+)"?/i.exec(response.headers.get('Content-Disposition')||'');
+   const url=URL.createObjectURL(blob);
+   const a=document.createElement('a');
+   a.href=url;
+   a.download=match?.[1]||fallbackName;
+   document.body.appendChild(a);
+   a.click();
+   a.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),1000);
+   message('Archivo Excel (.xlsx) descargado.');
+  }catch(error){
+   if(error.name==='AbortError')handleError(Error('La exportación Excel tardó demasiado. Vuelve a intentarlo.'));
+   else if(error instanceof TypeError)handleError(Error('No hay conexión con la tienda. Comprueba que Java esté ejecutándose.'));
+   else handleError(error);
+  }finally{
+   clearTimeout(timer);
+   button.textContent=label;
+  }
+ });
+}
+$('#export-excel-pedidos')?.addEventListener('click',e=>descargarExcel(e.currentTarget,'/admin/reportes/excel/pedidos',`cielo-pedidos-${$('#period')?.value||'30'}d.xlsx`));
+$('#export-excel-resumen')?.addEventListener('click',e=>descargarExcel(e.currentTarget,'/admin/reportes/excel/resumen',`cielo-reporte-ventas-${$('#period')?.value||'30'}d.xlsx`));
 (async()=>{const {user}=await Cielo.session();if(!user){location.replace('login.html?next=admin.html');return;}if(user.role!=='ADMIN'){location.replace('index.html');return;}$('#dashboard').hidden=false;$('#dashboard').setAttribute('aria-busy','true');try{await loadAll();}finally{$('#dashboard').removeAttribute('aria-busy');}})().catch(handleError);

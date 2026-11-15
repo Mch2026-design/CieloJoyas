@@ -97,3 +97,5 @@
 @media(max-width:600px){.review-row-actions{flex-basis:100%!important;justify-content:flex-end}.admin-review-dialog{width:calc(100% - 20px);max-height:calc(100dvh - 20px)}.admin-review-dialog>header,.admin-review-body{padding:20px}.admin-review-dialog footer{padding:14px 20px}.admin-review-dialog h2{font-size:26px}.admin-review-dialog footer button{flex:1}.admin-review-body>img{height:160px}}
 
 .admin-review-body input[type=url]{display:block;width:100%;min-height:48px;padding:12px;border:1px solid #cfbfb1;border-radius:4px;background:#fff;color:var(--ink);font:16px/1.4 var(--sans)}
+.export-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.export-button:disabled{opacity:.6;cursor:wait}

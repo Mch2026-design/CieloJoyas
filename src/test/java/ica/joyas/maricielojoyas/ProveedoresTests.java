@@ -1,10 +1,11 @@
 package ica.joyas.maricielojoyas;
 
 import ica.joyas.maricielojoyas.controller.AppController;
+import ica.joyas.maricielojoyas.dao.IReporteDAO;
 import ica.joyas.maricielojoyas.modelo.Proveedor;
-import ica.joyas.maricielojoyas.repositorio.ProveedorRepository;
+import ica.joyas.maricielojoyas.repositorio.*;
+import ica.joyas.maricielojoyas.validacion.*;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.Map;
 import java.util.Optional;
@@ -14,8 +15,13 @@ import static org.mockito.Mockito.*;
 class ProveedoresTests {
     private final ProveedorRepository repository = mock(ProveedorRepository.class);
     private AppController controller() {
-        AppController controller = new AppController();
-        ReflectionTestUtils.setField(controller, "proveedores", repository);
+        AppController controller = new AppController(
+            mock(UsuarioRepository.class), mock(ClienteRepository.class), mock(CategoriaRepository.class),
+            mock(ProductoRepository.class), mock(CuponRepository.class), mock(PedidoRepository.class),
+            mock(DetallePedidoRepository.class), mock(PagoRepository.class), repository,
+            mock(CompraRepository.class), mock(GarantiaRepository.class), mock(ResenaRepository.class),
+            mock(PedidoService.class), mock(IReporteDAO.class), mock(AccesoService.class),
+            mock(Ubigeos.class), mock(AvisosPedido.class));
         when(repository.save(any(Proveedor.class))).thenAnswer(i -> i.getArgument(0));
         return controller;
     }

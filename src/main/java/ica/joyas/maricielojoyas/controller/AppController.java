@@ -1,10 +1,10 @@
 package ica.joyas.maricielojoyas.controller;
 
+import ica.joyas.maricielojoyas.dao.IReporteDAO;
 import ica.joyas.maricielojoyas.modelo.*;
 import ica.joyas.maricielojoyas.repositorio.*;
 import ica.joyas.maricielojoyas.validacion.*;
 import org.springframework.beans.factory.annotation.*;
-import org.springframework.jdbc.core.JdbcTemplate;
 import jakarta.servlet.http.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,6 @@ import java.io.IOException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import java.math.*;
 import java.time.*;
 import java.util.*;
 import static ica.joyas.maricielojoyas.validacion.Reglas.*;
@@ -23,26 +22,63 @@ import static ica.joyas.maricielojoyas.validacion.Reglas.*;
 @RestController
 @RequestMapping("/api")
 public class AppController {
-    @Autowired private UsuarioRepository usuarios;
-    @Autowired private ClienteRepository clientes;
-    @Autowired private CategoriaRepository categorias;
-    @Autowired private ProductoRepository productos;
-    @Autowired private CuponRepository cupones;
-    @Autowired private PedidoRepository pedidos;
-    @Autowired private DetallePedidoRepository detalles;
-    @Autowired private PagoRepository pagos;
-    @Autowired private ProveedorRepository proveedores;
-    @Autowired private CompraRepository compras;
-    @Autowired private GarantiaRepository garantias;
-    @Autowired private ResenaRepository resenas;
-    @Autowired private PedidoService pedidosService;
-    @Autowired private JdbcTemplate jdbc;
-    @Autowired private AccesoService acceso;
-    @Autowired private Ubigeos ubigeos;
-    @Autowired private AvisosPedido avisosPedido;
+    private final UsuarioRepository usuarios;
+    private final ClienteRepository clientes;
+    private final CategoriaRepository categorias;
+    private final ProductoRepository productos;
+    private final CuponRepository cupones;
+    private final PedidoRepository pedidos;
+    private final DetallePedidoRepository detalles;
+    private final PagoRepository pagos;
+    private final ProveedorRepository proveedores;
+    private final CompraRepository compras;
+    private final GarantiaRepository garantias;
+    private final ResenaRepository resenas;
+    private final PedidoService pedidosService;
+    private final IReporteDAO reporteDAO;
+    private final AccesoService acceso;
+    private final Ubigeos ubigeos;
+    private final AvisosPedido avisosPedido;
     @Value("${cielo.whatsapp:}") private String whatsapp;
     @Value("${cielo.payment.cci:00000000000000000000}") private String paymentCci;
-    private static final ZoneId LIMA = ZoneId.of("America/Lima");
+
+    @Autowired
+    public AppController(
+            UsuarioRepository usuarios,
+            ClienteRepository clientes,
+            CategoriaRepository categorias,
+            ProductoRepository productos,
+            CuponRepository cupones,
+            PedidoRepository pedidos,
+            DetallePedidoRepository detalles,
+            PagoRepository pagos,
+            ProveedorRepository proveedores,
+            CompraRepository compras,
+            GarantiaRepository garantias,
+            ResenaRepository resenas,
+            PedidoService pedidosService,
+            IReporteDAO reporteDAO,
+            AccesoService acceso,
+            Ubigeos ubigeos,
+            AvisosPedido avisosPedido) {
+        this.usuarios = usuarios;
+        this.clientes = clientes;
+        this.categorias = categorias;
+        this.productos = productos;
+        this.cupones = cupones;
+        this.pedidos = pedidos;
+        this.detalles = detalles;
+        this.pagos = pagos;
+        this.proveedores = proveedores;
+        this.compras = compras;
+        this.garantias = garantias;
+        this.resenas = resenas;
+        this.pedidosService = pedidosService;
+        this.reporteDAO = reporteDAO;
+        this.acceso = acceso;
+        this.ubigeos = ubigeos;
+        this.avisosPedido = avisosPedido;
+    }
 
     private static Map<String, Object> vista(Object... pares) {
         Map<String, Object> resultado = new LinkedHashMap<>();
@@ -125,7 +161,7 @@ public class AppController {
     }
 
     @GetMapping("/health") public Map<String, Object> salud() {
-        return Map.of("ok", true, "database", jdbc.queryForObject("select current_database()", String.class));
+        return Map.of("ok", true, "database", reporteDAO.obtenerBaseDatosActual());
     }
     @GetMapping("/config") public Map<String, Object> configuracion() {
         String cci = paymentCci.matches("[0-9]{20}") ? paymentCci : "00000000000000000000";
@@ -273,44 +309,10 @@ public class AppController {
         r.setAprobada(aprobada); resenas.save(r); return Map.of("ok", true);
     }
     @GetMapping("/admin/segments") public List<Map<String, Object>> segmentos() {
-        List<Pedido> ventas = pedidos.findAll().stream().filter(this::confirmado).toList();
-        return clientes.findAll().stream().filter(Cliente::getSuscrito).map(c -> {
-            List<Pedido> comprasCliente = ventas.stream().filter(p -> p.getCliente().getId().equals(c.getId())).toList();
-            BigDecimal gastado = comprasCliente.stream().map(Pedido::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
-            return vista("email", c.getEmail(), "orders", comprasCliente.size(), "spent", gastado,
-                "segment", comprasCliente.isEmpty() ? "Suscrita" : comprasCliente.size() >= 3 ? "Recurrente" : "Nueva compradora");
-        }).toList();
+        return reporteDAO.obtenerSegmentosClientes();
     }
     @GetMapping("/admin/report") public Map<String, Object> reporte(@RequestParam(defaultValue = "30") int days) {
         if (days < 1 || days > 365) throw error("El periodo debe estar entre 1 y 365 días.");
-        OffsetDateTime desde = LocalDate.now(LIMA).minusDays(days - 1L).atStartOfDay(LIMA).toOffsetDateTime();
-        List<Pedido> recientes = pedidos.findByCreadoEnAfterOrderByIdDesc(desde);
-        List<Pedido> ventas = pedidos.findAll().stream().filter(this::confirmado)
-            .filter(p -> p.getPagadoEn() != null && !p.getPagadoEn().isBefore(desde)).toList();
-        BigDecimal ingreso = ventas.stream().map(Pedido::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
-        Map<String, BigDecimal> diario = new TreeMap<>(); Map<Long, Map<String, Object>> popular = new HashMap<>();
-        for (Pedido p : ventas) {
-            String dia = p.getPagadoEn().atZoneSameInstant(LIMA).toLocalDate().toString(); diario.merge(dia, p.getTotal(), BigDecimal::add);
-            for (DetallePedido d : detalles.findByPedidoIdOrderById(p.getId())) {
-                var fila = popular.computeIfAbsent(d.getProducto().getId(), k -> vista("name", d.getNombreProducto(), "quantity", 0, "revenue", BigDecimal.ZERO));
-                fila.put("quantity", (Integer) fila.get("quantity") + d.getCantidad());
-                // Importe de productos antes de descuentos; ingreso usa total final confirmado.
-                fila.put("revenue", ((BigDecimal) fila.get("revenue")).add(d.getImporte()));
-            }
-        }
-        List<Map<String, Object>> estados = new ArrayList<>();
-        for (String estado : List.of("pendiente", "pagado", "preparando", "enviado", "entregado", "cancelado"))
-            estados.add(vista("status", estado, "count", recientes.stream().filter(p -> p.getEstado().equals(estado)).count()));
-        Map<String, BigDecimal> medios = new TreeMap<>();
-        for (Pedido venta : ventas) {
-            Pago pago = pagos.findByPedidoId(venta.getId()).orElseThrow();
-            medios.merge(pago.getMetodo(), venta.getTotal(), BigDecimal::add);
-        }
-        return vista("days", days, "byStatus", estados, "byPayment", medios.entrySet().stream().map(e -> vista("method", e.getKey(), "revenue", e.getValue())).toList(),
-            "summary", vista("revenue", ingreso, "orders", recientes.size(), "customers", recientes.stream().map(Pedido::getEmail).distinct().count(),
-            "average", ventas.isEmpty() ? BigDecimal.ZERO : ingreso.divide(BigDecimal.valueOf(ventas.size()), 2, RoundingMode.HALF_UP)),
-            "daily", diario.entrySet().stream().map(e -> vista("day", e.getKey(), "revenue", e.getValue())).toList(),
-            "popular", popular.values().stream().sorted(Comparator.comparingInt(m -> -(Integer) m.get("quantity"))).limit(8).toList(),
-            "recent", recientes.stream().map(this::pedido).toList());
+        return reporteDAO.obtenerReporteVentas(days);
     }
 }
