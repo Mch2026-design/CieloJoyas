@@ -36,6 +36,8 @@ build/
 .env
 application-local.properties
 *.log
+logs/
+mantenimiento/backups/
 
 # Fotografías de clientes, no incluir en entregas ni repositorios
 uploads/
