@@ -35,6 +35,15 @@
   const handleGoogleCallback=async()=>{
     const hashParams=new URLSearchParams(location.hash.replace(/^#/,''));
     const queryParams=new URLSearchParams(location.search);
+    const oauthType=hashParams.get('type')||queryParams.get('type');
+    if(oauthType==='recovery'){
+      if(mode!=='recovery'){
+        location.replace('/acceso/recuperar.html'+location.hash);
+        return true;
+      }
+      return false;
+    }
+    if(mode==='recovery')return false;
     const oauthError=hashParams.get('error')||queryParams.get('error');
     const oauthErrorDesc=hashParams.get('error_description')||queryParams.get('error_description');
     const accessToken=hashParams.get('access_token');
@@ -86,8 +95,84 @@
   };
   propagateNext();
   initGoogleAuth();
+  let recoveryToken='';
+  const initRecoveryPage=()=>{
+    if(mode!=='recovery')return;
+    const hashParams=new URLSearchParams(location.hash.replace(/^#/,''));
+    const queryParams=new URLSearchParams(location.search);
+    const err=hashParams.get('error')||queryParams.get('error');
+    const errDesc=hashParams.get('error_description')||queryParams.get('error_description');
+    recoveryToken=hashParams.get('access_token')||'';
+    if(location.hash||err)history.replaceState(null,'',location.pathname);
+    if(err){
+      showError(errDesc||'El enlace de recuperación expiró o no es válido. Solicita uno nuevo.');
+      form.querySelector('[type="submit"]').disabled=true;
+    }else if(!recoveryToken){
+      showError('Abre este enlace desde el correo de recuperación que envió Supabase.');
+      form.querySelector('[type="submit"]').disabled=true;
+    }
+  };
+  const initForgotPanel=()=>{
+    const loginPanel=document.querySelector('#login-panel');
+    const forgotPanel=document.querySelector('#forgot-panel');
+    const openBtn=document.querySelector('#forgot-open-btn');
+    const backBtn=document.querySelector('#forgot-back-btn');
+    const forgotForm=document.querySelector('#forgot-form');
+    const forgotStatus=document.querySelector('#forgot-status');
+    const forgotEmail=document.querySelector('#forgot-email');
+    const forgotEmailErr=document.querySelector('#error-forgot-email');
+    if(!loginPanel||!forgotPanel||!openBtn||!backBtn||!forgotForm)return;
+    const showForgot=open=>{
+      loginPanel.hidden=open;
+      forgotPanel.hidden=!open;
+      if(open){
+        if(forgotStatus){forgotStatus.hidden=true;forgotStatus.textContent='';forgotStatus.className='access-status';}
+        if(forgotEmailErr)forgotEmailErr.textContent='';
+        const loginEmail=form.elements.email?.value?.trim();
+        if(loginEmail&&!forgotEmail.value)forgotEmail.value=loginEmail;
+        forgotEmail.focus();
+      }else{
+        form.elements.email?.focus();
+      }
+    };
+    openBtn.addEventListener('click',()=>showForgot(true));
+    backBtn.addEventListener('click',()=>showForgot(false));
+    forgotForm.addEventListener('submit',async event=>{
+      event.preventDefault();
+      forgotEmail.value=forgotEmail.value.trim().toLowerCase();
+      if(forgotEmailErr)forgotEmailErr.textContent='';
+      forgotStatus.hidden=true;forgotStatus.className='access-status';
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(forgotEmail.value)){
+        if(forgotEmailErr)forgotEmailErr.textContent='Ingresa un correo electrónico válido.';
+        forgotEmail.setAttribute('aria-invalid','true');
+        forgotEmail.focus();
+        return;
+      }
+      forgotEmail.setAttribute('aria-invalid','false');
+      const button=forgotForm.querySelector('[type="submit"]'),original=button.innerHTML;
+      await busy(button,async()=>{
+        button.textContent='Enviando enlace…';
+        try{
+          const data=await api('/auth/password/recover',{method:'POST',body:{email:forgotEmail.value}});
+          forgotStatus.textContent=data.message||'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.';
+          forgotStatus.classList.add('is-success');
+          forgotStatus.hidden=false;
+          forgotStatus.focus();
+        }catch(error){
+          forgotStatus.textContent=error.message||'No se pudo enviar el correo de recuperación.';
+          forgotStatus.classList.add('is-error');
+          forgotStatus.hidden=false;
+          forgotStatus.focus();
+        }finally{
+          button.innerHTML=original;
+        }
+      });
+    });
+  };
+  initRecoveryPage();
+  initForgotPanel();
   handleGoogleCallback().then(handled=>{
-    if(handled)return;
+    if(handled||mode==='recovery')return;
     session().then(data=>{
       if(data.user){clearSavedNext();location.replace(destination(data.user));return;}
       if(mode==='setup'&&!data.needsAdmin){location.replace('/acceso/login.html');return;}
@@ -95,10 +180,25 @@
     }).catch(error=>showError(error.message));
   });
   function showError(message){summary.textContent=message;summary.hidden=false;summary.focus();}
+  function passwordChecklist(value){
+    const rules={
+      length:value.length>=12&&value.length<=128,
+      number:/[0-9]/.test(value),
+      upper:/[A-Z]/.test(value),
+      special:/[^A-Za-z0-9\s]/.test(value)
+    };
+    document.querySelectorAll('#password-rules [data-rule]').forEach(el=>el.classList.toggle('ok',!!rules[el.dataset.rule]));
+    if(!rules.length)return 'Usa al menos 12 caracteres.';
+    if(!rules.number)return 'Incluye al menos un número.';
+    if(!rules.upper)return 'Incluye al menos una letra mayúscula.';
+    if(!rules.special)return 'Incluye al menos un carácter especial.';
+    return '';
+  }
   function validate(input){
     let message='';const value=input.value;
     if(input.required&&!value.trim())message='Completa este campo.';
     else if(input.type==='email'&&value&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim()))message='Ingresa un correo electrónico válido.';
+    else if(input.name==='password'&&mode==='recovery')message=passwordChecklist(value);
     else if(input.name==='password'&&mode!=='login'&&value.length<8)message='Usa al menos 8 caracteres.';
     else if(input.name==='passwordConfirmation'&&value!==form.elements.password.value)message='Las contraseñas deben coincidir.';
     else if(input.name==='phone'&&value&&!/^9\d{8}$/.test(value))message='Ingresa 9 dígitos que empiecen por 9.';
@@ -116,6 +216,7 @@
     if(!event.relatedTarget?.closest('button[type="submit"]'))validate(input);
   }));
   controls.forEach(input=>input.addEventListener('input',()=>{
+    if(mode==='recovery'&&input.name==='password')passwordChecklist(input.value);
     if(input.getAttribute('aria-invalid')==='true')validate(input);
     if(input.name==='password'&&form.elements.passwordConfirmation?.getAttribute('aria-invalid')==='true')validate(form.elements.passwordConfirmation);
   }));
@@ -129,6 +230,16 @@
     if(errors.length){summary.innerHTML='<p>Revisa los campos indicados para continuar.</p><ul>'+errors.map(({input,message})=>`<li><a href="#${input.id}">${esc(input.previousElementSibling?.textContent||input.closest('.access-field').querySelector('label').textContent)}: ${esc(message)}</a></li>`).join('')+'</ul>';summary.hidden=false;summary.focus();return;}
     const button=form.querySelector('[type=submit]'),original=button.innerHTML;
     await busy(button,async()=>{
+      if(mode==='recovery'){
+        button.textContent='Cambiando contraseña…';
+        try{
+          await api('/auth/password/reset',{method:'POST',body:{accessToken:recoveryToken,...Object.fromEntries(new FormData(form))}});
+          clearSavedNext();
+          location.replace('/tienda/index.html');
+        }catch(error){showError(error.message);}
+        finally{button.innerHTML=original;}
+        return;
+      }
       button.textContent=mode==='login'?'Iniciando sesión…':'Creando tu cuenta…';
       try{const data=await api('/auth/'+mode,{method:'POST',body:Object.fromEntries(new FormData(form))});clearSavedNext();location.assign(destination(data.user));}
       catch(error){showError(error.message);}

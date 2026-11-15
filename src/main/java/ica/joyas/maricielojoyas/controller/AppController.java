@@ -122,6 +122,31 @@ public class AppController {
         Usuario usuario = acceso.autenticarORegistrarGoogle(perfil.email(), perfil.nombres(), perfil.apellidos());
         return acceso.entrar(usuario, request);
     }
+    @PostMapping("/auth/password/recover") public Map<String, Object> solicitarRecuperacion(@RequestBody Map<String, Object> datos, HttpServletRequest request) {
+        String correo = Reglas.email(datos);
+        String proto = request.getHeader("X-Forwarded-Proto");
+        if (proto == null || proto.isBlank()) proto = request.getScheme();
+        String host = request.getHeader("X-Forwarded-Host");
+        if (host == null || host.isBlank()) {
+            int port = request.getServerPort();
+            boolean defecto = ("http".equals(proto) && port == 80) || ("https".equals(proto) && port == 443);
+            host = request.getServerName() + (defecto ? "" : ":" + port);
+        }
+        String redirectTo = proto + "://" + host + "/acceso/recuperar.html";
+        googleAuth.solicitarRecuperacion(correo, redirectTo);
+        return vista("ok", true, "message", "Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.");
+    }
+    @PostMapping("/auth/password/reset") public Map<String, Object> restablecerPassword(@RequestBody Map<String, Object> datos, HttpServletRequest request) {
+        String token = datos.get("accessToken") instanceof String s ? s : "";
+        String clave = datos.get("password") instanceof String s ? s : "";
+        String confirmacion = datos.get("passwordConfirmation") instanceof String s ? s : "";
+        acceso.validarPasswordSegura(clave);
+        if (!clave.equals(confirmacion)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Las contraseñas deben coincidir.");
+        GoogleAuthService.PerfilGoogle perfil = googleAuth.verificarToken(token);
+        googleAuth.actualizarPasswordEnSupabase(token, clave);
+        Usuario usuario = acceso.restablecerPassword(perfil.email(), perfil.nombres(), perfil.apellidos(), clave, confirmacion);
+        return acceso.entrar(usuario, request);
+    }
     @PostMapping("/auth/login") public Map<String, Object> entrar(@RequestBody Map<String, Object> datos, HttpServletRequest request) {
         return acceso.entrar(acceso.autenticar(datos, request.getSession()), request);
     }

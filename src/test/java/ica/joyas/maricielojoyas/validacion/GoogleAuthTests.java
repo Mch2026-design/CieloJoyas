@@ -87,4 +87,29 @@ class GoogleAuthTests {
                 () -> acceso.autenticarORegistrarGoogle("bloqueado@gmail.com", "Luis", "Diaz"));
         assertEquals(HttpStatus.FORBIDDEN, ex.getStatusCode());
     }
+
+    @Test
+    void restablecerPasswordValidaComplejidadYActualizaHash() {
+        UsuarioRepository usuarios = mock(UsuarioRepository.class);
+        ClienteRepository clientes = mock(ClienteRepository.class);
+        JdbcTemplate jdbc = mock(JdbcTemplate.class);
+        AccesoService acceso = new AccesoService(usuarios, clientes, jdbc);
+
+        assertThrows(ResponseStatusException.class, () -> acceso.validarPasswordSegura("Corta1!"));
+        assertThrows(ResponseStatusException.class, () -> acceso.validarPasswordSegura("SinNumeroEspecial"));
+        assertThrows(ResponseStatusException.class, () -> acceso.validarPasswordSegura("sinmayuscula1!"));
+        assertThrows(ResponseStatusException.class, () -> acceso.validarPasswordSegura("SinEspecial1234"));
+        assertDoesNotThrow(() -> acceso.validarPasswordSegura("CieloJoyas2026!"));
+
+        Usuario existente = new Usuario();
+        existente.setEmail("cliente@gmail.com");
+        existente.setActivo(true);
+        existente.setRol("CLIENTE");
+        when(usuarios.findByEmailIgnoreCase("cliente@gmail.com")).thenReturn(Optional.of(existente));
+        when(usuarios.saveAndFlush(any(Usuario.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Usuario actualizado = acceso.restablecerPassword("cliente@gmail.com", "Ana", "Lopez",
+                "CieloJoyas2026!", "CieloJoyas2026!");
+        assertTrue(ClaveAcceso.coincide("CieloJoyas2026!", actualizado.getPasswordHash()));
+    }
 }

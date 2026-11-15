@@ -26,6 +26,7 @@ public class AccesoConfig implements WebMvcConfigurer {
         registry.addViewController("/contacto.html").setViewName("forward:/tienda/contacto.html");
         registry.addViewController("/login.html").setViewName("forward:/acceso/login.html");
         registry.addViewController("/registro.html").setViewName("forward:/acceso/registro.html");
+        registry.addViewController("/recuperar.html").setViewName("forward:/acceso/recuperar.html");
         registry.addViewController("/configurar-admin.html").setViewName("forward:/acceso/configurar-admin.html");
         registry.addViewController("/cuenta.html").setViewName("forward:/cuenta/cuenta.html");
         registry.addViewController("/resenas.html").setViewName("forward:/resenas/resenas.html");

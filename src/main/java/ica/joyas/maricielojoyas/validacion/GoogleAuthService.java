@@ -9,6 +9,8 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
 
@@ -91,5 +93,48 @@ public class GoogleAuthService {
         if (nombres.length() > 50) nombres = nombres.substring(0, 50);
         if (apellidos.length() > 49) apellidos = apellidos.substring(0, 49);
         return new PerfilGoogle(email, nombres, apellidos);
+    }
+
+    public void solicitarRecuperacion(String email, String redirectTo) {
+        if (!habilitado()) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "La recuperación de contraseña por Supabase aún no está configurada (falta SUPABASE_ANON_KEY).");
+        }
+        String uri = supabaseUrl + "/auth/v1/recover";
+        if (redirectTo != null && !redirectTo.isBlank()) {
+            uri += "?redirect_to=" + URLEncoder.encode(redirectTo, StandardCharsets.UTF_8);
+        }
+        try {
+            restClient.post()
+                    .uri(uri)
+                    .header("apikey", supabaseAnonKey)
+                    .header("Content-Type", "application/json")
+                    .body(Map.of("email", email))
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RestClientException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                    "No se pudo solicitar el correo de recuperación en Supabase. Intenta nuevamente en unos minutos.");
+        }
+    }
+
+    public void actualizarPasswordEnSupabase(String accessToken, String nuevaPassword) {
+        if (!habilitado()) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Falta configurar SUPABASE_ANON_KEY en el servidor.");
+        }
+        try {
+            restClient.put()
+                    .uri(supabaseUrl + "/auth/v1/user")
+                    .header("apikey", supabaseAnonKey)
+                    .header("Authorization", "Bearer " + accessToken.trim())
+                    .header("Content-Type", "application/json")
+                    .body(Map.of("password", nuevaPassword))
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RestClientException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "El enlace de recuperación expiró o no es válido. Solicita uno nuevo.");
+        }
     }
 }

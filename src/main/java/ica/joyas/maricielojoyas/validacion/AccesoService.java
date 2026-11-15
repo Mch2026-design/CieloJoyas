@@ -117,4 +117,38 @@ public class AccesoService {
         clientes.registrarSiFalta(nombres, apellidos, correo, null, false);
         return nuevo;
     }
+
+    public void validarPasswordSegura(String clave) {
+        if (clave == null || clave.length() < 12 || clave.length() > 128)
+            throw error("La contraseña debe tener entre 12 y 128 caracteres.");
+        if (!clave.matches(".*[0-9].*"))
+            throw error("La contraseña debe incluir al menos un número.");
+        if (!clave.matches(".*[A-Z].*"))
+            throw error("La contraseña debe incluir al menos una letra mayúscula.");
+        if (!clave.matches(".*[^A-Za-z0-9\\s].*"))
+            throw error("La contraseña debe incluir al menos un carácter especial.");
+    }
+
+    @Transactional
+    public Usuario restablecerPassword(String correo, String nombres, String apellidos, String clave, String confirmacion) {
+        validarPasswordSegura(clave);
+        if (!clave.equals(confirmacion))
+            throw error("Las contraseñas deben coincidir.");
+        Usuario existente = usuarios.findByEmailIgnoreCase(correo).orElse(null);
+        if (existente != null) {
+            if (!Boolean.TRUE.equals(existente.getActivo())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Tu cuenta está desactivada. Contacta a la tienda.");
+            }
+            existente.setPasswordHash(ClaveAcceso.guardar(clave));
+            return usuarios.saveAndFlush(existente);
+        }
+        Usuario nuevo = new Usuario();
+        nuevo.setNombre((nombres + " " + apellidos).trim());
+        nuevo.setEmail(correo);
+        nuevo.setPasswordHash(ClaveAcceso.guardar(clave));
+        nuevo.setRol("CLIENTE");
+        usuarios.saveAndFlush(nuevo);
+        clientes.registrarSiFalta(nombres, apellidos, correo, null, false);
+        return nuevo;
+    }
 }
