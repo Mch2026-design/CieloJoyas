@@ -1,0 +1,53 @@
+{
+  "fecha": "2026-11-15 01:41:09",
+  "resultados": [
+    {
+      "escenario": "GET /api/health (API + PostgreSQL)",
+      "url": "https://cielojoyas.onrender.com/api/health",
+      "peticiones": 40,
+      "concurrencia": 8,
+      "exitosas_2xx_3xx": 40,
+      "fallidas": 0,
+      "tasa_exito_pct": 100.0,
+      "min_ms": 199.2,
+      "promedio_ms": 376.6,
+      "mediana_ms": 395.3,
+      "p95_ms": 590.0,
+      "max_ms": 602.1,
+      "throughput_rps": 20.01,
+      "duracion_total_s": 2.0
+    },
+    {
+      "escenario": "GET / (Inicio HTML)",
+      "url": "https://cielojoyas.onrender.com/",
+      "peticiones": 40,
+      "concurrencia": 8,
+      "exitosas_2xx_3xx": 40,
+      "fallidas": 0,
+      "tasa_exito_pct": 100.0,
+      "min_ms": 164.3,
+      "promedio_ms": 301.9,
+      "mediana_ms": 294.5,
+      "p95_ms": 498.2,
+      "max_ms": 601.4,
+      "throughput_rps": 23.24,
+      "duracion_total_s": 1.72
+    },
+    {
+      "escenario": "GET /catalogo.html (Catalogo HTML)",
+      "url": "https://cielojoyas.onrender.com/catalogo.html",
+      "peticiones": 40,
+      "concurrencia": 8,
+      "exitosas_2xx_3xx": 40,
+      "fallidas": 0,
+      "tasa_exito_pct": 100.0,
+      "min_ms": 180.2,
+      "promedio_ms": 262.5,
+      "mediana_ms": 247.5,
+      "p95_ms": 389.1,
+      "max_ms": 513.5,
+      "throughput_rps": 28.61,
+      "duracion_total_s": 1.4
+    }
+  ]
+}

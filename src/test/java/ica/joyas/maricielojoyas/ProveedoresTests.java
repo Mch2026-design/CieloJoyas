@@ -21,7 +21,7 @@ class ProveedoresTests {
             mock(DetallePedidoRepository.class), mock(PagoRepository.class), repository,
             mock(CompraRepository.class), mock(GarantiaRepository.class), mock(ResenaRepository.class),
             mock(PedidoService.class), mock(IReporteDAO.class), mock(AccesoService.class),
-            mock(Ubigeos.class), mock(AvisosPedido.class));
+            mock(Ubigeos.class), mock(AvisosPedido.class), mock(GoogleAuthService.class));
         when(repository.save(any(Proveedor.class))).thenAnswer(i -> i.getArgument(0));
         return controller;
     }

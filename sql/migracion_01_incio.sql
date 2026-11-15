@@ -235,17 +235,17 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_resenas_demo_producto ON resenas(producto_
 
 -- Nombres, textos y fotografías ilustrativos. No representan compras verificadas.
 INSERT INTO resenas(producto_id,pedido_id,nombre_cliente,email,contenido,foto_url,verificada,aprobada,demostracion,creado_en)
-SELECT p.id,NULL,d.nombre,'demo-resenas@example.test',d.contenido,p.imagen_url,FALSE,TRUE,TRUE,
+SELECT p.id,NULL,d.nombre,'demo-resenas@example.test',d.contenido,d.foto,FALSE,TRUE,TRUE,
     CURRENT_TIMESTAMP - d.dias * INTERVAL '1 day'
 FROM (VALUES
-    ('ANI-001','Lucía M.','Un detalle delicado para todos los días. Me encanta cómo combina con otras piezas sin perder su protagonismo.',12),
-    ('COL-001','Valeria R.','Elegí este collar como un regalo especial. El corazón le da un toque bonito a un conjunto sencillo.',10),
-    ('PUL-001','Camila S.','La cadena fina tiene justo el estilo que buscaba: discreto y fácil de combinar. La llevaría sola o con un reloj.',8),
-    ('ARE-001','Andrea P.','Las argollas son ese clásico que siempre completa mi look. El acabado dorado se luce precioso con el cabello recogido.',6),
-    ('COL-002','Daniela V.','La perla aporta un detalle muy lindo. Es una pieza que elegiría tanto para una reunión como para una ocasión especial.',3)
-) AS d(referencia,nombre,contenido,dias)
+    ('ANI-001','Lucía M.','Un detalle delicado para todos los días. Me encanta cómo combina con otras piezas sin perder su protagonismo.','assets/resenas/resena-ani-001.webp',12),
+    ('COL-001','Valeria R.','Elegí este collar como un regalo especial. El corazón le da un toque bonito a un conjunto sencillo.','assets/resenas/resena-col-001.webp',10),
+    ('PUL-001','Camila S.','La cadena fina tiene justo el estilo que buscaba: discreto y fácil de combinar. La llevaría sola o con un reloj.','assets/resenas/resena-pul-001.webp',8),
+    ('ARE-001','Andrea P.','Las argollas son ese clásico que siempre completa mi look. El acabado dorado se luce precioso con el cabello recogido.','assets/resenas/resena-are-001.webp',6),
+    ('COL-002','Daniela V.','La perla aporta un detalle muy lindo. Es una pieza que elegiría tanto para una reunión como para una ocasión especial.','assets/resenas/resena-col-002.webp',3)
+) AS d(referencia,nombre,contenido,foto,dias)
 JOIN productos p ON p.referencia=d.referencia
-ON CONFLICT (producto_id) WHERE demostracion DO NOTHING;
+ON CONFLICT (producto_id) WHERE demostracion DO UPDATE SET foto_url = EXCLUDED.foto_url;
 
 ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS pedido_recordado_id BIGINT REFERENCES pedidos(id);
 COMMIT;
@@ -296,17 +296,17 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_resenas_demo_producto ON resenas(producto_
 
 -- Nombres, textos y fotografías ilustrativos. No representan compras verificadas.
 INSERT INTO resenas(producto_id,pedido_id,nombre_cliente,email,contenido,foto_url,verificada,aprobada,demostracion,creado_en)
-SELECT p.id,NULL,d.nombre,'demo-resenas@example.test',d.contenido,p.imagen_url,FALSE,TRUE,TRUE,
+SELECT p.id,NULL,d.nombre,'demo-resenas@example.test',d.contenido,d.foto,FALSE,TRUE,TRUE,
     CURRENT_TIMESTAMP - d.dias * INTERVAL '1 day'
 FROM (VALUES
-    ('ANI-001','Lucía M.','Un detalle delicado para todos los días. Me encanta cómo combina con otras piezas sin perder su protagonismo.',12),
-    ('COL-001','Valeria R.','Elegí este collar como un regalo especial. El corazón le da un toque bonito a un conjunto sencillo.',10),
-    ('PUL-001','Camila S.','La cadena fina tiene justo el estilo que buscaba: discreto y fácil de combinar. La llevaría sola o con un reloj.',8),
-    ('ARE-001','Andrea P.','Las argollas son ese clásico que siempre completa mi look. El acabado dorado se luce precioso con el cabello recogido.',6),
-    ('COL-002','Daniela V.','La perla aporta un detalle muy lindo. Es una pieza que elegiría tanto para una reunión como para una ocasión especial.',3)
-) AS d(referencia,nombre,contenido,dias)
+    ('ANI-001','Lucía M.','Un detalle delicado para todos los días. Me encanta cómo combina con otras piezas sin perder su protagonismo.','assets/resenas/resena-ani-001.webp',12),
+    ('COL-001','Valeria R.','Elegí este collar como un regalo especial. El corazón le da un toque bonito a un conjunto sencillo.','assets/resenas/resena-col-001.webp',10),
+    ('PUL-001','Camila S.','La cadena fina tiene justo el estilo que buscaba: discreto y fácil de combinar. La llevaría sola o con un reloj.','assets/resenas/resena-pul-001.webp',8),
+    ('ARE-001','Andrea P.','Las argollas son ese clásico que siempre completa mi look. El acabado dorado se luce precioso con el cabello recogido.','assets/resenas/resena-are-001.webp',6),
+    ('COL-002','Daniela V.','La perla aporta un detalle muy lindo. Es una pieza que elegiría tanto para una reunión como para una ocasión especial.','assets/resenas/resena-col-002.webp',3)
+) AS d(referencia,nombre,contenido,foto,dias)
 JOIN productos p ON p.referencia=d.referencia
-ON CONFLICT (producto_id) WHERE demostracion DO NOTHING;
+ON CONFLICT (producto_id) WHERE demostracion DO UPDATE SET foto_url = EXCLUDED.foto_url;
 COMMIT;
 
 

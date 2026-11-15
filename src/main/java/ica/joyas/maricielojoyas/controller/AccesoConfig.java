@@ -15,6 +15,30 @@ import java.util.Set;
 public class AccesoConfig implements WebMvcConfigurer {
     private final AccesoService acceso;
     public AccesoConfig(AccesoService acceso) { this.acceso = acceso; }
+    @Override public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("forward:/tienda/index.html");
+        registry.addViewController("/index.html").setViewName("forward:/tienda/index.html");
+        registry.addViewController("/catalogo.html").setViewName("forward:/tienda/catalogo.html");
+        registry.addViewController("/ofertas.html").setViewName("forward:/tienda/ofertas.html");
+        registry.addViewController("/novedades.html").setViewName("forward:/tienda/novedades.html");
+        registry.addViewController("/nosotras.html").setViewName("forward:/tienda/nosotras.html");
+        registry.addViewController("/personaliza.html").setViewName("forward:/tienda/personaliza.html");
+        registry.addViewController("/contacto.html").setViewName("forward:/tienda/contacto.html");
+        registry.addViewController("/login.html").setViewName("forward:/acceso/login.html");
+        registry.addViewController("/registro.html").setViewName("forward:/acceso/registro.html");
+        registry.addViewController("/configurar-admin.html").setViewName("forward:/acceso/configurar-admin.html");
+        registry.addViewController("/cuenta.html").setViewName("forward:/cuenta/cuenta.html");
+        registry.addViewController("/resenas.html").setViewName("forward:/resenas/resenas.html");
+        registry.addViewController("/productos.html").setViewName("forward:/admin/productos.html");
+        registry.addViewController("/admin.html").setViewName("forward:/admin/admin.html");
+        registry.addViewController("/admin-compras.html").setViewName("forward:/admin/admin-compras.html");
+        registry.addViewController("/admin-inventario.html").setViewName("forward:/admin/admin-inventario.html");
+        registry.addViewController("/admin-pedidos.html").setViewName("forward:/admin/admin-pedidos.html");
+        registry.addViewController("/admin-posventa.html").setViewName("forward:/admin/admin-posventa.html");
+        registry.addViewController("/admin-productos.html").setViewName("forward:/admin/admin-productos.html");
+        registry.addViewController("/admin-promociones.html").setViewName("forward:/admin/admin-promociones.html");
+        registry.addViewController("/admin-reportes.html").setViewName("forward:/admin/admin-reportes.html");
+    }
     @Override public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new HandlerInterceptor() {
             @Override public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -27,13 +51,19 @@ public class AccesoConfig implements WebMvcConfigurer {
                     if (usuario == null || !usuario.getRol().equals("ADMIN"))
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "El certificado se descarga desde un pedido con pago confirmado.");
                 }
-                boolean paginaAdmin = ruta.equals("/productos.html") || ruta.equals("/admin.html") || (ruta.startsWith("/admin-") && ruta.endsWith(".html"));
-                if (paginaAdmin || ruta.equals("/cuenta.html")) {
+                boolean paginaAdmin = (ruta.startsWith("/admin/") && ruta.endsWith(".html"))
+                        || ruta.equals("/productos.html") || ruta.equals("/admin.html")
+                        || (ruta.startsWith("/admin-") && ruta.endsWith(".html"));
+                boolean paginaCuenta = ruta.equals("/cuenta/cuenta.html") || ruta.equals("/cuenta.html");
+                if (paginaAdmin || paginaCuenta) {
                     response.setHeader("Cache-Control", "no-store");
-                    if (usuario == null) { response.sendRedirect("/login.html?next=" + ruta.substring(1)); return false; }
-                    if (paginaAdmin && !usuario.getRol().equals("ADMIN")) { response.sendRedirect("/index.html"); return false; }
-                    if (ruta.equals("/cuenta.html") && usuario.getRol().equals("ADMIN")) { response.sendRedirect("/productos.html"); return false; }
-                    if (ruta.equals("/admin.html") || ruta.equals("/admin-productos.html")) { response.sendRedirect("/productos.html"); return false; }
+                    if (usuario == null) { response.sendRedirect("/acceso/login.html?next=" + ruta); return false; }
+                    if (paginaAdmin && !usuario.getRol().equals("ADMIN")) { response.sendRedirect("/tienda/index.html"); return false; }
+                    if (paginaCuenta && usuario.getRol().equals("ADMIN")) { response.sendRedirect("/admin/productos.html"); return false; }
+                    if (ruta.equals("/admin/admin.html") || ruta.equals("/admin/admin-productos.html")
+                            || ruta.equals("/admin.html") || ruta.equals("/admin-productos.html")) {
+                        response.sendRedirect("/admin/productos.html"); return false;
+                    }
                 }
                 if (ruta.startsWith("/api/")) {
                     response.setHeader("Cache-Control", "no-store");
@@ -51,6 +81,6 @@ public class AccesoConfig implements WebMvcConfigurer {
                 }
                 return true;
             }
-        }).addPathPatterns("/api/**", "/assets/certificado-material.*", "/productos.html", "/admin.html", "/admin-*.html", "/cuenta.html");
+        }).addPathPatterns("/api/**", "/assets/certificado-material.*", "/admin/**", "/cuenta/**", "/productos.html", "/admin.html", "/admin-*.html", "/cuenta.html");
     }
 }

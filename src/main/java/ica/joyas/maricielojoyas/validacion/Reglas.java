@@ -7,9 +7,11 @@ import java.math.RoundingMode;
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /** Validaciones compartidas sin dependencias adicionales. */
 public final class Reglas {
+    private static final Pattern ESPACIOS_CORREO = Pattern.compile("\\s");
     private Reglas() {}
     public static ResponseStatusException error(String mensaje) {
         return new ResponseStatusException(HttpStatus.BAD_REQUEST, mensaje);
@@ -24,7 +26,12 @@ public final class Reglas {
     }
     public static String email(Map<String, ?> datos) {
         String email = texto(datos, "email", 5, 254).toLowerCase(java.util.Locale.ROOT);
-        if (!email.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}")) throw error("Ingresa un correo válido.");
+        int arroba = email.indexOf('@');
+        // El punto separador necesita un carácter de dominio antes y dos después.
+        int punto = email.lastIndexOf('.', email.length() - 3);
+        if (arroba < 1 || arroba != email.lastIndexOf('@') || punto <= arroba + 1
+                || ESPACIOS_CORREO.matcher(email).find())
+            throw error("Ingresa un correo válido.");
         return email;
     }
     public static long id(Object valor) {

@@ -98,4 +98,23 @@ public class AccesoService {
         if (!administrador) clientes.registrarSiFalta(nombres, apellidos, correo, nulo(telefono), false);
         return usuario;
     }
+
+    @Transactional
+    public Usuario autenticarORegistrarGoogle(String correo, String nombres, String apellidos) {
+        Usuario existente = usuarios.findByEmailIgnoreCase(correo).orElse(null);
+        if (existente != null) {
+            if (!Boolean.TRUE.equals(existente.getActivo())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Tu cuenta está desactivada. Contacta a la tienda.");
+            }
+            return existente;
+        }
+        Usuario nuevo = new Usuario();
+        nuevo.setNombre((nombres + " " + apellidos).trim());
+        nuevo.setEmail(correo);
+        nuevo.setPasswordHash(ClaveAcceso.guardar(UUID.randomUUID().toString()));
+        nuevo.setRol("CLIENTE");
+        usuarios.saveAndFlush(nuevo);
+        clientes.registrarSiFalta(nombres, apellidos, correo, null, false);
+        return nuevo;
+    }
 }

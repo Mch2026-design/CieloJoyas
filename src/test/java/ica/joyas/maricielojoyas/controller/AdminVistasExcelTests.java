@@ -13,7 +13,7 @@ class AdminVistasExcelTests {
 
     @Test
     void adminPedidosConservaCsvYAgregaBotonExportarExcel() throws IOException {
-        String html = leerRecurso("static/admin-pedidos.html");
+        String html = leerRecurso("static/admin/admin-pedidos.html");
         assertTrue(html.contains("id=\"export-csv\""));
         assertTrue(html.contains("id=\"export-excel-pedidos\""));
         assertTrue(html.contains("Exportar Excel (.xlsx)"));
@@ -22,7 +22,7 @@ class AdminVistasExcelTests {
 
     @Test
     void adminReportesAgregaBotonExportarExcelYConservaPeriodo() throws IOException {
-        String html = leerRecurso("static/admin-reportes.html");
+        String html = leerRecurso("static/admin/admin-reportes.html");
         assertTrue(html.contains("id=\"export-excel-resumen\""));
         assertTrue(html.contains("Exportar Excel (.xlsx)"));
         assertTrue(html.contains("id=\"period\""));
@@ -30,7 +30,7 @@ class AdminVistasExcelTests {
 
     @Test
     void adminJsConectaBotonesExcelConEndpointsYFiltroDePeriodo() throws IOException {
-        String js = leerRecurso("static/admin.js");
+        String js = leerRecurso("static/admin/admin.js");
         assertTrue(js.contains("#export-excel-pedidos"));
         assertTrue(js.contains("#export-excel-resumen"));
         assertTrue(js.contains("/admin/reportes/excel/pedidos"));

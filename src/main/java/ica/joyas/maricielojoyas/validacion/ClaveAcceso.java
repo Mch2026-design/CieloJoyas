@@ -9,6 +9,7 @@ import java.util.Base64;
 /** Contraseñas con sal aleatoria mediante las APIs de Java. */
 public final class ClaveAcceso {
     private static final int ITERACIONES = 210000;
+    private static final SecureRandom ALEATORIO = new SecureRandom();
     private ClaveAcceso() {}
     private static byte[] derivar(String texto, byte[] sal, int vueltas) {
         PBEKeySpec spec = new PBEKeySpec(texto.toCharArray(), sal, vueltas, 256);
@@ -17,7 +18,7 @@ public final class ClaveAcceso {
         finally { spec.clearPassword(); }
     }
     public static String guardar(String texto) {
-        byte[] sal = new byte[16]; new SecureRandom().nextBytes(sal);
+        byte[] sal = new byte[16]; ALEATORIO.nextBytes(sal);
         return "pbkdf2$" + ITERACIONES + "$" + Base64.getEncoder().encodeToString(sal) + "$"
             + Base64.getEncoder().encodeToString(derivar(texto, sal, ITERACIONES));
     }

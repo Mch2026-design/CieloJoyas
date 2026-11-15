@@ -18,16 +18,38 @@ import static ica.joyas.maricielojoyas.validacion.Reglas.*;
 /** Compra y cambios de stock en transacciones, con bloqueo de las filas afectadas. */
 @Service
 public class PedidoService {
-    @Autowired private ProductoRepository productos;
-    @Autowired private PedidoRepository pedidos;
-    @Autowired private DetallePedidoRepository detalles;
-    @Autowired private PagoRepository pagos;
-    @Autowired private ClienteRepository clientes;
-    @Autowired private CuponRepository cupones;
-    @Autowired private CompraRepository compras;
-    @Autowired private ProveedorRepository proveedores;
-    @Autowired private Ubigeos ubigeos;
+    private final ProductoRepository productos;
+    private final PedidoRepository pedidos;
+    private final DetallePedidoRepository detalles;
+    private final PagoRepository pagos;
+    private final ClienteRepository clientes;
+    private final CuponRepository cupones;
+    private final CompraRepository compras;
+    private final ProveedorRepository proveedores;
+    private final Ubigeos ubigeos;
     @PersistenceContext private EntityManager entityManager;
+
+    @Autowired
+    public PedidoService(
+            ProductoRepository productos,
+            PedidoRepository pedidos,
+            DetallePedidoRepository detalles,
+            PagoRepository pagos,
+            ClienteRepository clientes,
+            CuponRepository cupones,
+            CompraRepository compras,
+            ProveedorRepository proveedores,
+            Ubigeos ubigeos) {
+        this.productos = productos;
+        this.pedidos = pedidos;
+        this.detalles = detalles;
+        this.pagos = pagos;
+        this.clientes = clientes;
+        this.cupones = cupones;
+        this.compras = compras;
+        this.proveedores = proveedores;
+        this.ubigeos = ubigeos;
+    }
 
     public Cupon validarCupon(String codigo, BigDecimal subtotal) {
         Cupon cupon = cupones.findByCodigo(codigo.trim().toUpperCase(Locale.ROOT))

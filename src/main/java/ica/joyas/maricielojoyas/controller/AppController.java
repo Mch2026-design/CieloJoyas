@@ -39,6 +39,7 @@ public class AppController {
     private final AccesoService acceso;
     private final Ubigeos ubigeos;
     private final AvisosPedido avisosPedido;
+    private final GoogleAuthService googleAuth;
     @Value("${cielo.whatsapp:}") private String whatsapp;
     @Value("${cielo.payment.cci:00000000000000000000}") private String paymentCci;
 
@@ -60,7 +61,8 @@ public class AppController {
             IReporteDAO reporteDAO,
             AccesoService acceso,
             Ubigeos ubigeos,
-            AvisosPedido avisosPedido) {
+            AvisosPedido avisosPedido,
+            GoogleAuthService googleAuth) {
         this.usuarios = usuarios;
         this.clientes = clientes;
         this.categorias = categorias;
@@ -78,6 +80,7 @@ public class AppController {
         this.acceso = acceso;
         this.ubigeos = ubigeos;
         this.avisosPedido = avisosPedido;
+        this.googleAuth = googleAuth;
     }
 
     private static Map<String, Object> vista(Object... pares) {
@@ -110,6 +113,15 @@ public class AppController {
                 "quantity", d.getCantidad(), "price", d.getPrecioUnitario(), "engraving", d.getGrabado(), "size", d.getTalla())).toList());
     }
     @GetMapping("/auth/me") public Map<String, Object> miSesion(HttpServletRequest request) { return acceso.sesion(request); }
+    @GetMapping("/auth/google/config") public Map<String, Object> googleConfig() {
+        return vista("enabled", googleAuth.habilitado(), "supabaseUrl", googleAuth.getSupabaseUrl());
+    }
+    @PostMapping("/auth/google") public Map<String, Object> entrarConGoogle(@RequestBody Map<String, Object> datos, HttpServletRequest request) {
+        String token = datos.get("accessToken") instanceof String s ? s : "";
+        GoogleAuthService.PerfilGoogle perfil = googleAuth.verificarToken(token);
+        Usuario usuario = acceso.autenticarORegistrarGoogle(perfil.email(), perfil.nombres(), perfil.apellidos());
+        return acceso.entrar(usuario, request);
+    }
     @PostMapping("/auth/login") public Map<String, Object> entrar(@RequestBody Map<String, Object> datos, HttpServletRequest request) {
         return acceso.entrar(acceso.autenticar(datos, request.getSession()), request);
     }
@@ -186,8 +198,9 @@ public class AppController {
     }
     @PostMapping("/orders") public Map<String, Object> comprar(@RequestBody Map<String, Object> datos, HttpServletRequest request) {
         Usuario usuario = acceso.actual(request.getSession(false));
+        if (usuario == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Inicia sesión para finalizar tu compra.");
         Map<String, Object> compra = new HashMap<>(datos);
-        if (usuario != null) compra.put("email", usuario.getEmail());
+        compra.put("email", usuario.getEmail());
         Map<String, Object> resultado = pedidosService.crear(compra, usuario);
         Long pedidoId = ((Number) resultado.get("id")).longValue();
         HttpSession sesion = request.getSession();
