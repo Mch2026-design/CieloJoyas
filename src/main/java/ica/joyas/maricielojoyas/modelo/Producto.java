@@ -55,6 +55,12 @@ public class Producto {
     @Column(name = "personalizable", nullable = false)
     private Boolean personalizable = false;
 
+    @Column(name = "admite_grabado", nullable = false)
+    private Boolean admiteGrabado = false;
+
+    @Column(name = "requiere_talla", nullable = false)
+    private Boolean requiereTalla = false;
+
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
 
@@ -93,6 +99,10 @@ public class Producto {
     public void setCertificadoUrl(String certificadoUrl) { this.certificadoUrl = certificadoUrl; }
     public Boolean getPersonalizable() { return personalizable; }
     public void setPersonalizable(Boolean personalizable) { this.personalizable = personalizable; }
+    public Boolean getAdmiteGrabado() { return admiteGrabado; }
+    public void setAdmiteGrabado(Boolean admiteGrabado) { this.admiteGrabado = admiteGrabado; }
+    public Boolean getRequiereTalla() { return requiereTalla; }
+    public void setRequiereTalla(Boolean requiereTalla) { this.requiereTalla = requiereTalla; }
     public Boolean getActivo() { return activo; }
     public void setActivo(Boolean activo) { this.activo = activo; }
     public OffsetDateTime getCreadoEn() { return creadoEn; }

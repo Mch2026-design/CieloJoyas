@@ -41,6 +41,7 @@ public class AppController {
     private final AvisosPedido avisosPedido;
     private final GoogleAuthService googleAuth;
     private final CarruselService carrusel;
+    @Autowired(required = false) private ProductoTallaRepository productoTallas;
     @Value("${cielo.whatsapp:}") private String whatsapp;
     @Value("${cielo.payment.cci:00000000000000000000}") private String paymentCci;
 
@@ -94,12 +95,51 @@ public class AppController {
     private boolean confirmado(Pedido pedido) {
         return Set.of("pagado", "preparando", "enviado", "entregado").contains(pedido.getEstado());
     }
+    private boolean esAnillo(Producto p) {
+        return p != null && p.getCategoria() != null && p.getCategoria().getNombre() != null
+                && "anillos".equalsIgnoreCase(p.getCategoria().getNombre().trim());
+    }
+    private int compararTalla(String a, String b) {
+        try {
+            return Double.compare(Double.parseDouble(a), Double.parseDouble(b));
+        } catch (NumberFormatException e) {
+            return a.compareToIgnoreCase(b);
+        }
+    }
+    private Map<Long, List<Map<String, Object>>> mapaTallas() {
+        Map<Long, List<Map<String, Object>>> out = new HashMap<>();
+        if (productoTallas == null) return out;
+        for (ProductoTalla pt : productoTallas.findAllByOrderByProductoIdAscIdAsc()) {
+            out.computeIfAbsent(pt.getProducto().getId(), k -> new ArrayList<>())
+                    .add(vista("size", pt.getTalla(), "stock", pt.getStock()));
+        }
+        out.values().forEach(list -> list.sort((x, y) -> compararTalla(String.valueOf(x.get("size")), String.valueOf(y.get("size")))));
+        return out;
+    }
+    private List<Map<String, Object>> tallasDe(Producto p) {
+        if (productoTallas == null || p.getId() == null) return List.of();
+        return productoTallas.findByProductoId(p.getId()).stream()
+                .sorted((x, y) -> compararTalla(x.getTalla(), y.getTalla()))
+                .map(pt -> vista("size", pt.getTalla(), "stock", pt.getStock()))
+                .toList();
+    }
     private Map<String, Object> producto(Producto p) {
+        return producto(p, tallasDe(p));
+    }
+    private Map<String, Object> producto(Producto p, List<Map<String, Object>> sizes) {
+        boolean requiereTalla = esAnillo(p) || Boolean.TRUE.equals(p.getRequiereTalla());
+        boolean admiteGrabado = Boolean.TRUE.equals(p.getAdmiteGrabado());
+        List<Map<String, Object>> safeSizes = sizes == null ? List.of() : sizes;
+        int stockVisible = requiereTalla && !safeSizes.isEmpty()
+                ? safeSizes.stream().mapToInt(s -> ((Number) s.get("stock")).intValue()).sum()
+                : p.getStock();
         return vista("id", p.getId(), "reference", p.getReferencia(), "name", p.getNombre(),
             "description", p.getDescripcion(), "category", p.getCategoria().getNombre(), "categoryId", p.getCategoria().getId(),
-            "price", p.getPrecio(), "compareAtPrice", p.getPrecioAnterior(), "stock", p.getStock(), "tag", p.getEtiqueta(),
+            "price", p.getPrecio(), "compareAtPrice", p.getPrecioAnterior(), "stock", stockVisible, "tag", p.getEtiqueta(),
             "src", p.getImagenUrl(), "alt", p.getImagenAlt(), "material", p.getMaterial(), "certificateUrl", null,
-            "customizable", p.getPersonalizable(), "active", p.getActivo(), "createdAt", p.getCreadoEn(),
+            "customizable", admiteGrabado || requiereTalla, "engravable", admiteGrabado, "requiresSize", requiereTalla,
+            "sizes", safeSizes,
+            "active", p.getActivo(), "createdAt", p.getCreadoEn(),
             "vendorId", p.getProveedor() == null ? null : p.getProveedor().getId());
     }
     private Map<String, Object> pedido(Pedido p) {
@@ -224,8 +264,11 @@ public class AppController {
         Map<Long, Integer> ventas = new HashMap<>();
         for (DetallePedido d : detalles.findAll()) if (confirmado(d.getPedido()))
             ventas.merge(d.getProducto().getId(), d.getCantidad(), Integer::sum);
+        Map<Long, List<Map<String, Object>>> tallasPorProducto = mapaTallas();
         return productos.findByActivoTrueOrderByIdDesc().stream().map(p -> {
-            var fila = producto(p); fila.put("salesCount", ventas.getOrDefault(p.getId(), 0)); return fila;
+            var fila = producto(p, tallasPorProducto.get(p.getId()));
+            fila.put("salesCount", ventas.getOrDefault(p.getId(), 0));
+            return fila;
         }).toList();
     }
     @PostMapping("/coupons/validate") public Map<String, Object> validarCupon(@RequestBody Map<String, Object> datos) {
@@ -293,7 +336,10 @@ public class AppController {
         }
         garantias.save(g); return Map.of("caseId", g.getId(), "message", "Recibimos tu solicitud de garantía.");
     }
-    @GetMapping("/admin/products") public List<Map<String, Object>> inventario() { return productos.findAll().stream().map(this::producto).toList(); }
+    @GetMapping("/admin/products") public List<Map<String, Object>> inventario() {
+        Map<Long, List<Map<String, Object>>> tallasPorProducto = mapaTallas();
+        return productos.findAll().stream().map(p -> producto(p, tallasPorProducto.get(p.getId()))).toList();
+    }
     @PostMapping("/admin/products") @Transactional public Map<String, Object> guardarProducto(@RequestBody Map<String, Object> datos) {
         Producto p = datos.get("id") == null || String.valueOf(datos.get("id")).isBlank() ? new Producto()
             : productos.bloquearPorId(id(datos.get("id"))).orElseThrow(() -> error("Producto no encontrado."));
@@ -303,14 +349,70 @@ public class AppController {
         p.setPrecio(dinero(datos.get("price"))); if (p.getPrecio().signum() == 0) throw error("El precio debe ser mayor que cero.");
         p.setPrecioAnterior(datos.get("compareAtPrice") == null || String.valueOf(datos.get("compareAtPrice")).isBlank() ? null : dinero(datos.get("compareAtPrice")));
         if (p.getPrecioAnterior() != null && p.getPrecioAnterior().compareTo(p.getPrecio()) <= 0) throw error("El precio anterior debe superar al actual.");
-        p.setStock(entero(datos, "stock", 0, 1000000)); p.setEtiqueta(nulo(texto(datos, "tag", 0, 60)));
+        p.setEtiqueta(nulo(texto(datos, "tag", 0, 60)));
         p.setImagenUrl(url(datos, "src", true)); p.setImagenAlt(texto(datos, "alt", 2, 254));
         p.setMaterial(texto(datos, "material", 2, 150)); p.setCertificadoUrl("/assets/certificado-material.pdf");
-        p.setPersonalizable(bandera(datos, "customizable"));
+        boolean admiteGrabado = datos.containsKey("engravable") ? bandera(datos, "engravable") : bandera(datos, "customizable");
+        boolean requiereTalla = esAnillo(p) || (datos.containsKey("requiresSize") && bandera(datos, "requiresSize"));
+        p.setAdmiteGrabado(admiteGrabado);
+        p.setRequiereTalla(requiereTalla);
+        p.setPersonalizable(admiteGrabado || requiereTalla);
         if (datos.containsKey("active")) p.setActivo(bandera(datos, "active"));
         p.setProveedor(datos.get("vendorId") == null || String.valueOf(datos.get("vendorId")).isBlank() ? null
             : proveedores.findById(id(datos.get("vendorId"))).orElseThrow(() -> error("Proveedor no encontrado.")));
-        return producto(productos.save(p));
+
+        Map<String, Integer> tallasLimpias = new LinkedHashMap<>();
+        if (requiereTalla) {
+            if (!(datos.get("sizes") instanceof List<?> filasTalla) || filasTalla.isEmpty())
+                throw error("Agrega al menos una talla con stock para esta pieza.");
+            int suma = 0;
+            for (Object item : filasTalla) {
+                if (!(item instanceof Map<?, ?> m)) throw error("Revisa las tallas ingresadas.");
+                String tallaRaw = m.get("size") == null ? "" : String.valueOf(m.get("size")).trim();
+                if (!tallaRaw.matches("[0-9]{1,2}(?:\\.[0-9])?"))
+                    throw error("Cada talla debe ser un número válido (ejemplo: 4, 5, 6.5).");
+                Object rawStock = m.get("stock");
+                if (rawStock == null || String.valueOf(rawStock).isBlank())
+                    throw error("Indica el stock numérico para la talla " + tallaRaw + ".");
+                int stk;
+                try { stk = Integer.parseInt(String.valueOf(rawStock).trim()); }
+                catch (NumberFormatException ex) { throw error("Stock inválido para la talla " + tallaRaw + "."); }
+                if (stk < 0 || stk > 1000000) throw error("El stock de cada talla debe estar entre 0 y 1000000.");
+                if (tallasLimpias.containsKey(tallaRaw)) throw error("La talla " + tallaRaw + " está repetida.");
+                tallasLimpias.put(tallaRaw, stk);
+                suma = Math.addExact(suma, stk);
+            }
+            p.setStock(suma);
+        } else {
+            p.setStock(entero(datos, "stock", 0, 1000000));
+        }
+
+        Producto guardado = productos.saveAndFlush(p);
+        if (productoTallas != null) {
+            List<ProductoTalla> existentes = productoTallas.findByProductoId(guardado.getId());
+            if (!requiereTalla) {
+                if (!existentes.isEmpty()) productoTallas.deleteAllInBatch(existentes);
+            } else {
+                Map<String, ProductoTalla> porTalla = new HashMap<>();
+                existentes.forEach(pt -> porTalla.put(pt.getTalla(), pt));
+                List<ProductoTalla> borrar = new ArrayList<>();
+                for (ProductoTalla pt : existentes) {
+                    if (!tallasLimpias.containsKey(pt.getTalla())) borrar.add(pt);
+                }
+                if (!borrar.isEmpty()) {
+                    productoTallas.deleteAllInBatch(borrar);
+                    productoTallas.flush();
+                }
+                List<ProductoTalla> guardar = new ArrayList<>();
+                for (var entry : tallasLimpias.entrySet()) {
+                    ProductoTalla pt = porTalla.getOrDefault(entry.getKey(), new ProductoTalla(guardado, entry.getKey(), entry.getValue()));
+                    pt.setStock(entry.getValue());
+                    guardar.add(pt);
+                }
+                productoTallas.saveAllAndFlush(guardar);
+            }
+        }
+        return producto(guardado);
     }
     @DeleteMapping("/admin/products/{id}") @Transactional public Map<String, Object> bajaProducto(@PathVariable Long id) {
         Producto p = productos.bloquearPorId(id).orElseThrow(() -> error("Producto no encontrado."));

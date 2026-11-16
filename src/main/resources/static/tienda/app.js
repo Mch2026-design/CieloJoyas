@@ -178,6 +178,11 @@ function renderHome() {
 const productOf = line => products.find(p=>p.id===line.productId);
 const subtotal = () => cart.reduce((sum,line)=>sum + Number(productOf(line)?.price || 0)*line.quantity,0);
 const discount = () => Math.round(subtotal() * (coupon?.discount || 0)) / 100;
+function sizeStockOf(p, size) {
+  if (!p?.requiresSize) return Number(p?.stock || 0);
+  const row = (p.sizes || []).find(s => String(s.size) === String(size));
+  return row ? Number(row.stock || 0) : 0;
+}
 function renderCart() {
   const count = cart.reduce((n,line)=>n+line.quantity,0);
   if(announcedCartCount!==count){cartAnnouncement.textContent=`Tu carrito tiene ${count} ${count===1?'unidad':'unidades'}.`;announcedCartCount=count;}
@@ -185,42 +190,114 @@ function renderCart() {
   $('#cart-empty').hidden=count>0; $('#cart-bottom').hidden=count===0;
   $('#cart-items').innerHTML=cart.map(line=>{
     const p=productOf(line); if(!p)return `<article class="cart-item"><p>Esta pieza ya no está disponible.</p><button data-remove="${esc(line.key)}">Eliminar</button></article>`;
-    const used=cart.filter(x=>x.productId===p.id).reduce((n,x)=>n+x.quantity,0);
-    return `<article class="cart-item"><img src="${esc(p.src)}" alt="${esc(p.alt)}" width="80" height="100"><div class="cart-item-info"><h3>${esc(p.name)}</h3><small>${esc(p.material)}${line.engraving?`<br>Grabado: ${esc(line.engraving)}`:''}${line.size?`<br>Talla: ${esc(line.size)}`:''}</small>${used>p.stock?'<p class="field-error">Revisa la cantidad: el stock disponible cambió.</p>':''}<div class="qty"><button data-qty="${esc(line.key)}" data-step="-1" aria-label="Quitar una unidad de ${esc(p.name)}">−</button><span>${line.quantity}</span><button data-qty="${esc(line.key)}" data-step="1" aria-label="Añadir una unidad de ${esc(p.name)}" ${used>=p.stock?'disabled':''}>+</button><button class="remove-item" data-remove="${esc(line.key)}">Eliminar</button></div></div><b class="price">${money(p.price*line.quantity)}</b></article>`;
+    const usedTotal=cart.filter(x=>x.productId===p.id).reduce((n,x)=>n+x.quantity,0);
+    const usedLine=p.requiresSize?cart.filter(x=>x.productId===p.id&&x.size===line.size).reduce((n,x)=>n+x.quantity,0):usedTotal;
+    const maxLine=p.requiresSize?sizeStockOf(p,line.size):p.stock;
+    const sizeWarn=usedLine>maxLine||usedTotal>p.stock;
+    return `<article class="cart-item"><img src="${esc(p.src)}" alt="${esc(p.alt)}" width="80" height="100"><div class="cart-item-info"><h3>${esc(p.name)}</h3><small>${esc(p.material)}${line.engraving?`<br>Grabado: ${esc(line.engraving)}`:''}${line.size?`<br>Talla: ${esc(line.size)} (US)`:''}</small>${sizeWarn?'<p class="field-error">Revisa la cantidad: el stock disponible cambió.</p>':''}<div class="qty"><button data-qty="${esc(line.key)}" data-step="-1" aria-label="Quitar una unidad de ${esc(p.name)}">−</button><span>${line.quantity}</span><button data-qty="${esc(line.key)}" data-step="1" aria-label="Añadir una unidad de ${esc(p.name)}" ${usedLine>=maxLine||usedTotal>=p.stock?'disabled':''}>+</button><button class="remove-item" data-remove="${esc(line.key)}">Eliminar</button></div></div><b class="price">${money(p.price*line.quantity)}</b></article>`;
   }).join('');
   $('#subtotal').textContent=money(subtotal()); $('#discount-row').hidden=!coupon; $('#discount-row span').textContent=coupon?`Descuento ${coupon.code}`:'Descuento'; $('#discount').textContent=money(discount());
   updateSummary();
 }
+const cleanSize=v=>{const s=String(v||'').trim();return /^[0-9]{1,2}(?:\.[0-9])?$/.test(s)?s:'';};
+const cleanEngraving=v=>String(v||'').toLocaleUpperCase('es-PE').replace(/[^A-ZÁÉÍÓÚÜÑ ]/g,'').replace(/\s{2,}/g,' ').trim().slice(0,16);
+const SIZE_GUIDE_ROWS=[
+  ['15.3 mm','47.9 mm','4.5'],['15.8 mm','49.3 mm','5'],['16.2 mm','50.6 mm','5.5'],
+  ['16.5 mm','51.9 mm','6'],['16.9 mm','53.1 mm','6.5'],['17.2 mm','54.3 mm','7'],
+  ['17.8 mm','55.7 mm','7.5'],['18.1 mm','57 mm','8'],['18.5 mm','58.2 mm','8.5'],
+  ['19.1 mm','59.3 mm','9'],['19.5 mm','60.8 mm','9.5'],['19.8 mm','61.5 mm','10']
+];
+let sizeGuideEl=null;
+function openSizeGuide(){
+  if(!sizeGuideEl){
+    sizeGuideEl=document.createElement('div');
+    sizeGuideEl.id='size-guide-modal';
+    sizeGuideEl.className='size-guide-modal';
+    sizeGuideEl.setAttribute('role','dialog');
+    sizeGuideEl.setAttribute('aria-modal','true');
+    sizeGuideEl.setAttribute('aria-labelledby','size-guide-title');
+    sizeGuideEl.hidden=true;
+    sizeGuideEl.innerHTML=`<div class="size-guide-card"><button type="button" class="icon-btn size-guide-close" id="close-size-guide" aria-label="Cerrar guía de tallas">×</button><div class="size-guide-head"><span class="eyebrow">MEDIDAS DE ANILLOS</span><div class="size-guide-title-row"><svg class="cielo-icon size-guide-icon" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="14" r="6"/><path d="M9.5 6.5 12 4l2.5 2.5"/><path d="M4 20h16"/></svg><h2 id="size-guide-title">Guía de tallas · Anillos</h2></div><p>Compara el diámetro interno de un anillo o el contorno de tu dedo en milímetros.</p></div><div class="size-guide-table-wrap"><table class="size-guide-table"><thead><tr><th><span>Diámetro (mm)</span></th><th><span>Circunferencia (mm)</span></th><th><span>Talla (US)</span></th></tr></thead><tbody>${SIZE_GUIDE_ROWS.map(([d,c,t])=>`<tr><td>${d}</td><td>${c}</td><td><b>${t}</b></td></tr>`).join('')}</tbody></table></div></div>`;
+    document.body.append(sizeGuideEl);
+    sizeGuideEl.addEventListener('click',e=>{if(e.target===sizeGuideEl||e.target.closest('#close-size-guide'))hide(sizeGuideEl);});
+  }
+  show(sizeGuideEl);
+}
 function add(id, engraving='', size='') {
   if(!cartAvailable())return;
   const p=products.find(x=>x.id===id); if(!p)return;
-  const used=cart.filter(x=>x.productId===id).reduce((n,x)=>n+x.quantity,0);
-  if(used>=p.stock){notify('No quedan más unidades de esa pieza.');return;}
-  const key=JSON.stringify([id,engraving.trim(),size.trim()]);
+  const finalSize=p.requiresSize?cleanSize(size):'';
+  const finalEngraving=p.engravable?cleanEngraving(engraving):'';
+  if(p.requiresSize&&!finalSize){openProduct(id,true);return;}
+  const available=p.requiresSize?sizeStockOf(p,finalSize):p.stock;
+  const usedLine=p.requiresSize?cart.filter(x=>x.productId===id&&x.size===finalSize).reduce((n,x)=>n+x.quantity,0):cart.filter(x=>x.productId===id).reduce((n,x)=>n+x.quantity,0);
+  const usedTotal=cart.filter(x=>x.productId===id).reduce((n,x)=>n+x.quantity,0);
+  if(available<=0||usedLine>=available||usedTotal>=p.stock){notify(p.requiresSize?`No quedan más unidades de la talla ${finalSize} (US).`:'No quedan más unidades de esa pieza.');return;}
+  const key=JSON.stringify([id,finalEngraving,finalSize]);
   const wasEmpty=cart.length===0;
   const line=cart.find(x=>x.key===key);
-  if(line){if(line.quantity>=100)return;line.quantity++;}else if(cart.length>=50){notify('Tu carrito admite hasta 50 selecciones distintas.');return;}else cart.push({key,productId:id,quantity:1,engraving:engraving.trim(),size:size.trim()});
+  if(line){if(line.quantity>=100)return;line.quantity++;}else if(cart.length>=50){notify('Tu carrito admite hasta 50 selecciones distintas.');return;}else cart.push({key,productId:id,quantity:1,engraving:finalEngraving,size:finalSize});
   save();if(wasEmpty)notify('Pieza añadida al carrito. Puedes seguir eligiendo.');
 }
-function openProduct(id) {
+function openProduct(id, promptSize=false) {
   const p=products.find(x=>x.id===id);if(!p)return;
-  const el=$('#product-modal');el.dataset.productId=p.id;
+  const el=$('#product-modal');el.dataset.productId=p.id;el.dataset.selectedSize='';
   $('#product-modal-image').src=p.src;$('#product-modal-image').alt=p.alt;$('#product-modal-category').textContent=p.category;$('#product-modal-title').textContent=p.name;$('#product-modal-price').textContent=money(p.price);
-  $('#product-modal-material').textContent=`${p.material}. ${p.stock>0?`${p.stock} unidades disponibles.`:'Pieza agotada.'}`;
+  const availableSizes=(p.sizes||[]).filter(s=>Number(s.stock)>0);
+  const totalStock=p.requiresSize?availableSizes.reduce((acc,s)=>acc+Number(s.stock),0):Number(p.stock||0);
+  $('#product-modal-material').textContent=`${p.material}. ${totalStock>0?`${totalStock} ${totalStock===1?'unidad disponible':'unidades disponibles'}.`:'Pieza agotada.'}`;
   $('#product-modal-certificate').hidden=!p.certificateUrl;if(p.certificateUrl)$('#product-modal-certificate').href=p.certificateUrl;
-  $('#product-modal-customization').innerHTML=p.customizable?'<label>Texto para grabado (opcional)<input id="product-engraving" maxlength="20" autocomplete="off"></label><label>Talla o medida (opcional)<input id="product-size" maxlength="30" autocomplete="off"></label>':'';
-  $('#product-modal-add').disabled=p.stock<=0;show(el);
+  let customHtml='';
+  if(p.requiresSize){
+    customHtml+=`<div class="size-selector-block"><div class="size-selector-head"><span class="size-selector-title">Tallas disponibles</span><button type="button" id="open-size-guide" class="size-guide-btn">Conversión de tallas</button></div>${availableSizes.length?`<div class="size-options-grid" role="radiogroup" aria-label="Tallas disponibles">${availableSizes.map(s=>`<button type="button" class="size-pill-btn" data-size="${esc(s.size)}" aria-pressed="false">${esc(s.size)} (US)</button>`).join('')}</div><p id="product-size-stock" class="size-stock-info">Selecciona una talla disponible.</p>`:'<p class="size-stock-empty">Sin stock en tallas por el momento.</p>'}</div>`;
+  }
+  if(p.engravable)customHtml+='<label class="engraving-field">Texto para grabado (opcional, máx. 16 mayúsculas)<input id="product-engraving" type="text" maxlength="16" autocomplete="off" placeholder="Ej. CIELO"><small id="product-engraving-count" class="engraving-counter">0 / 16 caracteres · Solo mayúsculas</small></label>';
+  customHtml+='<p id="product-modal-error" class="form-error" role="alert" aria-live="polite"></p>';
+  $('#product-modal-customization').innerHTML=customHtml;
+  $('#open-size-guide')?.addEventListener('click',openSizeGuide);
+  $('#product-modal-customization').querySelectorAll('.size-pill-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const picked=btn.dataset.size;
+      el.dataset.selectedSize=picked;
+      $('#product-modal-customization').querySelectorAll('.size-pill-btn').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));
+      const stk=sizeStockOf(p,picked);
+      const stockEl=$('#product-size-stock');
+      if(stockEl)stockEl.textContent=`${stk} ${stk===1?'unidad disponible':'unidades disponibles'} en talla ${picked} (US)`;
+      $('#product-modal-error').textContent='';
+    });
+  });
+  $('#product-engraving')?.addEventListener('input',e=>{
+    const raw=e.target.value;
+    const next=raw.toLocaleUpperCase('es-PE').replace(/[^A-ZÁÉÍÓÚÜÑ ]/g,'').replace(/\s{2,}/g,' ').slice(0,16);
+    if(raw!==next)e.target.value=next;
+    const counter=$('#product-engraving-count');
+    if(counter)counter.textContent=`${next.length} / 16 caracteres · Solo mayúsculas`;
+  });
+  $('#product-modal-add').disabled=totalStock<=0||(p.requiresSize&&!availableSizes.length);
+  show(el);
+  if(promptSize&&p.requiresSize&&availableSizes.length){
+    $('#product-modal-error').textContent='Selecciona una talla disponible para añadir esta pieza al carrito.';
+    $('#product-modal-customization').querySelector('.size-pill-btn')?.focus();
+  }
 }
-$('#product-modal-add').addEventListener('click',()=>{const id=Number($('#product-modal').dataset.productId),engraving=$('#product-engraving')?.value||'',size=$('#product-size')?.value||'';hide($('#product-modal'));add(id,engraving,size);});
+$('#product-modal-add').addEventListener('click',()=>{
+  const modal=$('#product-modal'),id=Number(modal.dataset.productId),p=products.find(x=>x.id===id);if(!p)return;
+  const size=p.requiresSize?cleanSize(modal.dataset.selectedSize||''):'',engraving=cleanEngraving($('#product-engraving')?.value||'');
+  if(p.requiresSize&&!size){$('#product-modal-error').textContent='Selecciona una talla disponible (US) para añadir al carrito.';$('#product-modal-customization').querySelector('.size-pill-btn')?.focus();return;}
+  const available=p.requiresSize?sizeStockOf(p,size):p.stock;
+  const usedLine=p.requiresSize?cart.filter(x=>x.productId===id&&x.size===size).reduce((n,x)=>n+x.quantity,0):cart.filter(x=>x.productId===id).reduce((n,x)=>n+x.quantity,0);
+  if(available<=0||usedLine>=available){$('#product-modal-error').textContent=`No quedan más unidades disponibles en talla ${size} (US).`;return;}
+  hide(modal);add(id,engraving,size);
+});
 document.addEventListener('click',e=>{
   const view=e.target.closest('[data-view]'),button=e.target.closest('[data-add]'),cat=e.target.closest('[data-shop-category]'),custom=e.target.closest('[data-shop-customizable]');
   if(view)openProduct(Number(view.dataset.view));
-  if(button)add(Number(button.dataset.add));
+  if(button){const id=Number(button.dataset.add),p=products.find(x=>x.id===id);if(p?.requiresSize)openProduct(id,true);else add(id);}
 });
 $('#cart-items').addEventListener('click',e=>{
   if(!cartAvailable())return;
   const q=e.target.closest('[data-qty]'),r=e.target.closest('[data-remove]');
-  if(q){const line=cart.find(x=>x.key===q.dataset.qty);if(!line)return;const p=productOf(line),step=Number(q.dataset.step),used=cart.filter(x=>x.productId===line.productId).reduce((n,x)=>n+x.quantity,0);if(step>0&&(!p||used>=p.stock))return;line.quantity+=step;cart=cart.filter(x=>x.quantity>0);save();}
+  if(q){const line=cart.find(x=>x.key===q.dataset.qty);if(!line)return;const p=productOf(line),step=Number(q.dataset.step);const usedTotal=cart.filter(x=>x.productId===line.productId).reduce((n,x)=>n+x.quantity,0);const usedLine=p?.requiresSize?cart.filter(x=>x.productId===line.productId&&x.size===line.size).reduce((n,x)=>n+x.quantity,0):usedTotal;const maxLine=p?.requiresSize?sizeStockOf(p,line.size):p?.stock||0;if(step>0&&(!p||usedLine>=maxLine||usedTotal>=p.stock))return;line.quantity+=step;cart=cart.filter(x=>x.quantity>0);save();}
   if(r){cart=cart.filter(x=>x.key!==r.dataset.remove);save();}
 });
 $('#forget-cart').addEventListener('click',()=>{if(!cartAvailable())return;cart=[];try{sessionStorage.removeItem(giftKey());}catch{}$('#gift-message').value='';save();notify('Selección y grabados borrados de este navegador.');});
@@ -263,20 +340,89 @@ async function restoreCoupon(){
 }
 $('#apply-coupon').addEventListener('click',e=>applyCoupon($('#coupon'),$('#coupon-message'),e.currentTarget));
 $('#checkout-apply-coupon').addEventListener('click',e=>applyCoupon($('#checkout-coupon'),$('#checkout-coupon-message'),e.currentTarget));
+function syncMercadoPagoUi(){
+  const enabled=!!mpConfig.enabled;
+  const radioSub=$('input[name="paymentMethod"][value="tarjeta"]')?.closest('label')?.querySelector('small');
+  if(radioSub)radioSub.textContent=enabled?'Ingresa los datos de tu tarjeta de crédito o débito':'Sin habilitar · Despliega para llenar los datos de tarjeta';
+  const badge=$('.card-drawer-badge');
+  if(badge)badge.hidden=enabled;
+  const drawerNote=$('.card-drawer-note');
+  if(drawerNote)drawerNote.hidden=enabled;
+  const secureNote=$('.checkout-section .secure-note');
+  if(secureNote)secureNote.textContent=enabled?'Elige cómo prefieres pagar. Los pagos con tarjeta se procesan de forma segura con Mercado Pago.':'Elige cómo prefieres pagar. No ingreses datos de tarjeta: el pago se coordina con la tienda.';
+}
 function updateSummary(){
   $('#checkout-summary-items').innerHTML=cart.map(line=>{const p=productOf(line);return p?`<div class="checkout-summary-item"><img src="${esc(p.src)}" alt="${esc(p.alt)}" width="64" height="80"><span>${esc(p.name)}<small>Cantidad: ${line.quantity}${line.engraving?` · Grabado: ${esc(line.engraving)}`:''}${line.size?` · Talla: ${esc(line.size)}`:''}</small></span><b>${money(p.price*line.quantity)}</b></div>`:'';}).join('');
+  syncMercadoPagoUi();
   const method=$('#checkout-form').elements.paymentMethod.value;
-  $('#checkout-selected-payment').textContent=({yape:'Yape',plin:'Plin',transferencia:'Transferencia bancaria',tarjeta:'Tarjeta / Mercado Pago (sin habilitar)'})[method]||'Selecciona un medio';
+  $('#checkout-selected-payment').textContent=({yape:'Yape',plin:'Plin',transferencia:'Transferencia bancaria',tarjeta:mpConfig.enabled?'Tarjeta / Mercado Pago':'Tarjeta / Mercado Pago (sin habilitar)'})[method]||'Selecciona un medio';
   const cardDrawer=$('#card-payment-drawer');
   if(cardDrawer)cardDrawer.hidden=method!=='tarjeta';
   $('#checkout-subtotal').textContent=money(subtotal());$('#checkout-discount').textContent=money(discount());$('#checkout-total').textContent=money(subtotal()-discount());$('#checkout-button-total').textContent=money(subtotal()-discount());
 }
-let mpConfig={enabled:false,sandbox:true,publicKey:''};
-api('/payments/mercadopago/config').then(c=>{if(c)mpConfig=c;}).catch(()=>{});
+let mpConfig={enabled:false,sandbox:true,publicKey:''},mpInstance=null,mpSdkPromise=null,pendingCardOrder=false;
+const mpConfigReady=api('/payments/mercadopago/config').then(c=>{if(c){mpConfig=c;syncMercadoPagoUi();}}).catch(()=>{});
+function loadMpSdk(){
+  if(window.MercadoPago)return Promise.resolve(window.MercadoPago);
+  if(mpSdkPromise)return mpSdkPromise;
+  mpSdkPromise=new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    script.src='https://sdk.mercadopago.com/js/v2';
+    script.async=true;
+    script.onload=()=>window.MercadoPago?resolve(window.MercadoPago):reject(Error('No se pudo cargar Mercado Pago.'));
+    script.onerror=()=>{mpSdkPromise=null;reject(Error('No se pudo conectar con Mercado Pago. Verifica tu conexión.'));};
+    document.head.appendChild(script);
+  });
+  return mpSdkPromise;
+}
+async function ensureMp(){
+  if(!mpConfig.enabled||!mpConfig.publicKey)throw Error('Mercado Pago no está configurado con llave pública.');
+  await loadMpSdk();
+  if(!mpInstance)mpInstance=new window.MercadoPago(mpConfig.publicKey,{locale:'es-PE'});
+  return mpInstance;
+}
+function validateCardFields(){
+  const number=($('#mp-card-number')?.value||'').replace(/\D/g,'');
+  const holder=($('#mp-card-holder')?.value||'').trim();
+  const expiry=($('#mp-card-expiry')?.value||'').trim();
+  const cvv=($('#mp-card-cvv')?.value||'').replace(/\D/g,'');
+  if(number.length<13||number.length>19){$('#mp-card-number')?.focus();throw Error('Ingresa un número de tarjeta válido.');}
+  if(holder.length<2){$('#mp-card-holder')?.focus();throw Error('Ingresa el nombre del titular de la tarjeta.');}
+  const m=/^(0[1-9]|1[0-2])\/([0-9]{2})$/.exec(expiry);
+  if(!m){$('#mp-card-expiry')?.focus();throw Error('Ingresa una fecha de vencimiento válida (MM/AA).');}
+  const now=new Date(),expYear=2000+Number(m[2]),expMonth=Number(m[1]);
+  if(expYear<now.getFullYear()||(expYear===now.getFullYear()&&expMonth<now.getMonth()+1)){$('#mp-card-expiry')?.focus();throw Error('La tarjeta ingresada está vencida.');}
+  if(cvv.length<3||cvv.length>4){$('#mp-card-cvv')?.focus();throw Error('Ingresa el código de seguridad (CVV) de 3 o 4 dígitos.');}
+  return {number,holder,month:m[1],year:String(expYear),cvv,installments:Number($('#mp-installments')?.value||1)};
+}
+async function tokenizeCard(d){
+  const card=validateCardFields();
+  const mp=await ensureMp();
+  let paymentMethodId='',issuerId='';
+  for(const binLen of [8,6]){
+    try{
+      const res=await mp.getPaymentMethods({bin:card.number.slice(0,binLen)});
+      const pm=res?.results?.[0];
+      if(pm?.id){paymentMethodId=pm.id;issuerId=pm.issuer?.id?String(pm.issuer.id):'';break;}
+    }catch{}
+  }
+  if(!paymentMethodId)throw Error('No pudimos reconocer la franquicia de tu tarjeta. Verifica el número.');
+  const idType=(d.documentType||'dni').toUpperCase();
+  const idNumber=(d.documentId||'').trim();
+  let tokenRes;
+  try{
+    tokenRes=await mp.createCardToken({cardNumber:card.number,cardholderName:card.holder,cardExpirationMonth:card.month,cardExpirationYear:card.year,securityCode:card.cvv,identificationType:idType,identificationNumber:idNumber});
+  }catch{
+    throw Error('No pudimos validar los datos de tu tarjeta en Mercado Pago. Revísalos e inténtalo de nuevo.');
+  }
+  if(!tokenRes?.id)throw Error('No se pudo generar el token de seguridad de la tarjeta.');
+  return {token:tokenRes.id,paymentMethodId,issuerId,installments:card.installments,identificationType:idType,identificationNumber:idNumber};
+}
 $('#mp-card-number')?.addEventListener('input',e=>{const digits=e.target.value.replace(/\D/g,'').slice(0,16);e.target.value=digits.replace(/(.{4})/g,'$1 ').trim();});
 $('#mp-card-expiry')?.addEventListener('input',e=>{const digits=e.target.value.replace(/\D/g,'').slice(0,4);e.target.value=digits.length>2?digits.slice(0,2)+'/'+digits.slice(2):digits;});
-$('#checkout').addEventListener('click',async()=>{try{if(!await verifyCartOwner())return;}catch(error){notify(error.message);return;}if(!cart.length)return;if(cartOwner==='guest'){const nextUrl=new URL(location.href);nextUrl.searchParams.set('checkout','1');const nextRel=nextUrl.pathname+nextUrl.search;location.assign('/acceso/login.html?next='+encodeURIComponent(nextRel));return;}hide($('#cart-panel'));$('#checkout-error').textContent='';$('#checkout-coupon-message').textContent='';$('#checkout-coupon').value=coupon?.code||'';updateSummary();await restoreDelivery();if(cartAvailable())show($('#checkout-modal'));});
-$('#checkout-form').addEventListener('change',e=>{if(e.target.name==='paymentMethod')updateSummary();});
+$('#mp-card-cvv')?.addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,4);});
+$('#checkout').addEventListener('click',async()=>{try{if(!await verifyCartOwner())return;}catch(error){notify(error.message);return;}if(!cart.length)return;const missingSize=cart.find(line=>{const p=productOf(line);return p?.requiresSize&&!/^[0-9]{1,2}(?:\.[0-9])?$/.test(line.size||'');});if(missingSize){hide($('#cart-panel'));notify('Elige la talla numérica de tus anillos antes de pagar.');openProduct(missingSize.productId,true);return;}if(cartOwner==='guest'){const nextUrl=new URL(location.href);nextUrl.searchParams.set('checkout','1');const nextRel=nextUrl.pathname+nextUrl.search;location.assign('/acceso/login.html?next='+encodeURIComponent(nextRel));return;}hide($('#cart-panel'));await mpConfigReady;$('#checkout-error').textContent='';$('#checkout-coupon-message').textContent='';$('#checkout-coupon').value=coupon?.code||'';updateSummary();await restoreDelivery();if(cartAvailable())show($('#checkout-modal'));});
+$('#checkout-form').addEventListener('change',e=>{if(e.target.name==='paymentMethod'){if(pendingCardOrder&&e.target.value!=='tarjeta'){requestId=crypto.randomUUID();pendingCardOrder=false;}updateSummary();}});
 $('#checkout-form').addEventListener('submit',async e=>{
   e.preventDefault();if(submittingOrder)return;
   // currentTarget se borra al terminar el evento: conservarlo antes del await.
@@ -293,7 +439,19 @@ $('#checkout-form').addEventListener('submit',async e=>{
   await busy(button,async()=>{
    states.forEach(([el])=>el.disabled=true);button.querySelector('.checkout-submit-label').hidden=true;button.querySelector('.checkout-processing').hidden=false;
    try{
-    const result=await api('/orders',{method:'POST',body:payload});
+    let result;
+    if(d.paymentMethod==='tarjeta'){
+     const cardAuth=await tokenizeCard(d);
+     const order=await api('/orders',{method:'POST',body:payload});
+     pendingCardOrder=true;
+     await api('/payments/mercadopago/pay',{method:'POST',body:{orderId:order.id,...cardAuth}});
+     result=await api('/orders/'+order.id);
+     pendingCardOrder=false;
+    }else{
+     result=await api('/orders',{method:'POST',body:payload});
+    }
+    requestId=crypto.randomUUID();
+    for(const cid of ['#mp-card-number','#mp-card-holder','#mp-card-expiry','#mp-card-cvv']){const cel=$(cid);if(cel)cel.value='';}
     hide($('#checkout-modal'));await CieloPedidos.open(result,{received:true,remembered:d.rememberDelivery==='on'});cart=[];save();form.reset();$('#gift-message').value='';try{sessionStorage.removeItem(giftKey());}catch{}syncDocument();syncDepartment();
     try{await loadProducts();}catch{notify('Tu pedido fue registrado. El catálogo se actualizará al recargar.');}
    }catch(error){$('#checkout-error').textContent=error.message;$('#checkout-error').focus();}
@@ -347,7 +505,7 @@ async function init(){
   if($('.drawer-price') && $('.price-filter-card'))$('.drawer-price').appendChild($('.price-filter-card'));
   syncLayers();
   if($('#product-grid')){ $('#product-grid').textContent='Cargando colección…';$('#search').value=state.query;$('#sort-products').value=state.sort;$('#price-min').value=state.min;$('#price-max').value=state.max; }
-  try{sessionMarker=authMarker();const {user}=await Cielo.session();cartOwner=ownerOf(user);if(sessionMarker!==authMarker()){location.reload();return;}cart=readCart();const mergedGuest=mergeGuestCartIntoCurrent();cartReady=true;try{$('#gift-message').value=sessionStorage.getItem(giftKey())||'';}catch{}categories=await api('/categories');renderFilters();await loadProducts();const linkedProduct=Number(new URLSearchParams(location.search).get('producto'));if(document.body.dataset.page==='catalogo' && linkedProduct)openProduct(linkedProduct);await restoreCoupon();if(mergedGuest>0)notify('Recuperamos los productos que guardaste antes de iniciar sesión y los añadimos a tu carrito.');if(user&&params.get('checkout')==='1'&&cart.length){const cleanUrl=new URL(location.href);cleanUrl.searchParams.delete('checkout');history.replaceState(null,'',cleanUrl.pathname+cleanUrl.search);$('#checkout-error').textContent='';$('#checkout-coupon-message').textContent='';$('#checkout-coupon').value=coupon?.code||'';updateSummary();await restoreDelivery();if(cartAvailable())show($('#checkout-modal'));}$('#service-notice').hidden=true;}
+  try{sessionMarker=authMarker();const {user}=await Cielo.session();cartOwner=ownerOf(user);if(sessionMarker!==authMarker()){location.reload();return;}cart=readCart();const mergedGuest=mergeGuestCartIntoCurrent();cartReady=true;try{$('#gift-message').value=sessionStorage.getItem(giftKey())||'';}catch{}categories=await api('/categories');renderFilters();await loadProducts();const linkedProduct=Number(new URLSearchParams(location.search).get('producto'));if(document.body.dataset.page==='catalogo' && linkedProduct)openProduct(linkedProduct);await restoreCoupon();if(mergedGuest>0)notify('Recuperamos los productos que guardaste antes de iniciar sesión y los añadimos a tu carrito.');if(user&&params.get('checkout')==='1'&&cart.length){const cleanUrl=new URL(location.href);cleanUrl.searchParams.delete('checkout');history.replaceState(null,'',cleanUrl.pathname+cleanUrl.search);await mpConfigReady;$('#checkout-error').textContent='';$('#checkout-coupon-message').textContent='';$('#checkout-coupon').value=coupon?.code||'';updateSummary();await restoreDelivery();if(cartAvailable())show($('#checkout-modal'));}$('#service-notice').hidden=true;}
   catch(e){$('#service-notice').textContent=e.message;$('#service-notice').hidden=false;if($('#product-grid')){$('#product-grid').innerHTML=`<p role="alert">${esc(e.message)} <button id="retry-catalog" type="button">Reintentar</button></p>`;$('#retry-catalog').addEventListener('click',()=>loadProducts().then(()=>$('#service-notice').hidden=true).catch(error=>notify(error.message)));}}
   try{const r=await fetch('/data/ubigeos-inei.json');if(!r.ok)throw Error();locations=await r.json();options($('#department'),'Selecciona departamento',[...new Set(locations.map(x=>x.department))].sort().map(x=>[x,x]));}
   catch{$('#checkout-error').textContent='No se pudieron cargar las ubicaciones. Recarga antes de comprar.';}finally{locationsReadyResolve();}

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -111,5 +112,24 @@ class GoogleAuthTests {
         Usuario actualizado = acceso.restablecerPassword("cliente@gmail.com", "Ana", "Lopez",
                 "CieloJoyas2026!", "CieloJoyas2026!");
         assertTrue(ClaveAcceso.coincide("CieloJoyas2026!", actualizado.getPasswordHash()));
+    }
+
+    @Test
+    void registroExigePasswordSeguraDe12Caracteres() {
+        UsuarioRepository usuarios = mock(UsuarioRepository.class);
+        ClienteRepository clientes = mock(ClienteRepository.class);
+        JdbcTemplate jdbc = mock(JdbcTemplate.class);
+        AccesoService acceso = new AccesoService(usuarios, clientes, jdbc);
+        when(usuarios.findByEmailIgnoreCase("nueva@gmail.com")).thenReturn(Optional.empty());
+        when(usuarios.saveAndFlush(any(Usuario.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        assertThrows(ResponseStatusException.class, () -> acceso.registrar(Map.of(
+                "email", "nueva@gmail.com", "firstName", "Ana", "lastName", "Perez",
+                "password", "Debil123!"), false));
+
+        Usuario creada = acceso.registrar(Map.of(
+                "email", "nueva@gmail.com", "firstName", "Ana", "lastName", "Perez",
+                "password", "CieloJoyas2026!"), false);
+        assertTrue(ClaveAcceso.coincide("CieloJoyas2026!", creada.getPasswordHash()));
     }
 }

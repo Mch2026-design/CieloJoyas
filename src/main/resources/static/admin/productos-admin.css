@@ -56,6 +56,13 @@
 .product-form-grid textarea{resize:vertical}
 .product-form-grid .check-field{display:flex;gap:10px;align-items:center;min-height:44px}
 .product-form-grid input[type=checkbox]{width:20px;height:20px;min-height:20px;flex:none;accent-color:var(--rose)}
+.product-sizes-editor{border:1px solid var(--line);border-radius:8px;padding:16px;background:var(--cream)}
+.sizes-editor-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.sizes-editor-head strong{display:block;font-size:14px}
+.sizes-editor-head small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.size-rows-list{display:grid;gap:10px;max-height:220px;overflow-y:auto;padding-right:4px}
+.size-stock-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:center}
+.size-stock-row .row-action{min-height:44px;padding:8px 12px}
 .product-certificate-note>span{font-size:14px;display:block;margin-bottom:10px}
 .product-certificate-note a{display:flex;align-items:center;gap:16px;padding:14px;background:var(--cream);border-radius:5px;font-size:13px;color:var(--muted)}
 .product-certificate-note img{width:120px;height:auto;flex:none}

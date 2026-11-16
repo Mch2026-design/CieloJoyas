@@ -48,10 +48,10 @@ Ejecuta la migración antes de iniciar para incorporar índices y restricciones.
 | `ofertas.html` | Productos cuyo precio anterior supera al actual |
 | `productos.html` | Entrada del panel, catálogo de administración, búsqueda y filtros |
 | `admin.html` | Redirección a Productos para conservar enlaces anteriores |
-| `admin-pedidos.html` | Pedidos, detalle, estados y exportación CSV |
+| `admin-pedidos.html` | Pedidos, detalle, estados (con flujo protegido para tarjeta), PDF y CSV |
 | `admin-productos.html` | Redirección a Productos para conservar enlaces anteriores |
 | `admin-reportes.html` | Estadísticas y reportes de ventas |
-| `admin-compras.html` | Compras y proveedores |
+| `admin-compras.html` | Gestión de proveedores y compras |
 | `admin-posventa.html` | Garantías, moderación y edición de texto/fotos de reseñas |
 | `admin-promociones.html` | Cupones y clientas suscritas |
 | `admin-carrusel.html` | Panel desplegable de hasta 5 carruseles para la portada (productos, velocidad y dirección) |
@@ -68,10 +68,10 @@ El menú superior cambia de archivo HTML y señala la página actual. Las catego
 ```text
 src/main/java/ica/joyas/maricielojoyas/
   MaricielojoyasApplication.java
-  modelo/       12 clases con getters y setters
-  repositorio/  12 interfaces NombreRepository.java
+  modelo/       13 clases con getters y setters (incluye ProductoTalla)
+  repositorio/  13 interfaces NombreRepository.java
   controller/   AppController.java, ResenasController.java, ErroresApi.java y AccesoConfig.java
-  validacion/   PedidoService.java, AccesoService.java, ClaveAcceso.java,
+  validacion/   PedidoService.java, AccesoService.java, MercadoPagoService.java, ClaveAcceso.java,
                 Reglas.java, Ubigeos.java, FotosResenas.java y AvisosPedido.java
 src/main/resources/
   application.properties
@@ -82,13 +82,16 @@ sql/
   migracion_01_incio.sql
   migracion_02_catalogo_60_productos.sql
   migracion_03_correo_pedidos.sql
+  migracion_04_inventario_proveedores.sql
+  migracion_04_mercadopago_y_tallas.sql
+  migracion_05_imagen_proveedores.sql
 ```
 
 Se conservan **Spring Web**, **Spring Data JPA** y **PostgreSQL Driver**, y se incorpora **Spring Boot Mail** para los avisos opcionales por correo. El proyecto original usa `spring-boot-starter-webmvc` para Spring Web. Las dependencias de prueba originales también se conservan. No hay Lombok, Spring Security ni servidor Node. El nombre técnico de la carpeta, la base y el paquete Java sigue siendo `maricielojoyas`; la marca de la tienda es **Cielo Joyas**.
 
 ## Cuentas y administración
 
-El registro público siempre crea el rol `CLIENTE`. La sesión del administrador abre `productos.html`; la del cliente abre `index.html`, tanto al iniciar sesión como al registrarse. El registro solicita nombres, apellidos, correo y una contraseña de al menos 8 caracteres. La cabecera muestra solo el primer nombre y un icono de cierre de sesión junto al carrito. El nombre abre el panel o el historial de pedidos, según el rol. Java comprueba el rol en las operaciones administrativas de productos, pedidos y reportes. Las contraseñas se guardan como hashes PBKDF2 y el acceso utiliza una sesión del servidor con cookie HttpOnly. Cerrar sesión retira el acceso.
+El registro público siempre crea el rol `CLIENTE`. La sesión del administrador abre `productos.html`; la del cliente abre `index.html`, tanto al iniciar sesión como al registrarse. El registro solicita nombres, apellidos, correo y una contraseña de al menos 12 caracteres (con mayúscula, número y carácter especial). También soporta acceso con Google OAuth vía Supabase (`SUPABASE_URL` y `SUPABASE_ANON_KEY`). La cabecera muestra solo el primer nombre y un icono de cierre de sesión junto al carrito. El nombre abre el panel o el historial de pedidos, según el rol. Java comprueba el rol en las operaciones administrativas de productos, pedidos y reportes. Las contraseñas se guardan como hashes PBKDF2 y el acceso utiliza una sesión del servidor con cookie HttpOnly. Cerrar sesión retira el acceso.
 
 Los pedidos realizados con una sesión de cliente se vinculan a esa cuenta y aparecen en su historial. Los pedidos anteriores como visitante se conservan; no se asignan automáticamente a una cuenta nueva. También puedes seguir comprando como visitante. El carrito se conserva al entrar o registrarte.
 
@@ -98,9 +101,9 @@ Productos muestra primero el catálogo, con búsqueda por nombre o referencia y 
 
 El panel permite agregar, consultar, editar y eliminar productos del catálogo. Eliminar los oculta para conservar los pedidos históricos; puedes reactivarlos con «Editar». Los reportes muestran ingresos confirmados, promedio, ventas diarias, productos vendidos, estados y medios de pago, con filtro de periodo y exportación CSV de los pedidos mostrados.
 
-## Las 12 tablas
+## Las 13 tablas
 
-`usuarios`, `clientes`, `categorias`, `productos`, `cupones`, `pedidos`, `detalle_pedidos`, `pagos`, `proveedores`, `compras`, `garantias` y `resenas`.
+`usuarios`, `clientes`, `categorias`, `productos`, `producto_tallas`, `cupones`, `pedidos`, `detalle_pedidos`, `pagos`, `proveedores`, `compras`, `garantias` y `resenas`.
 
 El rol se guarda en `usuarios`; la fotografía y el enlace de certificado se guardan en `productos`. Cada fila de `compras` registra un producto, costo y cantidad. Los sets tienen su propio producto y stock. El inventario controla cantidades, sin identificación ni certificado por unidad física y sin descomponer automáticamente los sets. Los ubigeos se ofrecen desde JSON y se validan en Java sin añadir una tabla.
 
@@ -115,7 +118,7 @@ El rol se guarda en `usuarios`; la fotografía y el enlace de certificado se gua
 - Las compras a proveedores incrementan stock.
 - Garantías, reseñas verificadas y moderadas, y suscripciones se guardan en la base.
 
-Los 8 productos, sus fotografías externas y las 20 unidades iniciales son de demostración. Ajusta el inventario y las imágenes antes de usarlos con compras reales. Yape, Plin y transferencia se coordinan con la tienda. La tarjeta está deshabilitada; no hay cobro automático ni tarifa de envío automática. El transporte se cotiza por separado. Los correos de pedido se envían automáticamente cuando SMTP está configurado.
+Los productos iniciales y su stock (incluido el stock por talla en anillos dentro de `producto_tallas`) son configurables desde el panel administrativo («Productos» y «Proveedores»). Yape, Plin y transferencia se coordinan con la tienda, mientras que el pago con tarjeta opera mediante Mercado Pago Checkout API (`MERCADOPAGO_ENABLED`, `MERCADOPAGO_SANDBOX`, `MERCADOPAGO_PUBLIC_KEY`, `MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_WEBHOOK_SECRET`), descontando stock por talla al aprobarse el cobro. Los correos de pedido se envían automáticamente cuando SMTP está configurado.
 
 `WHATSAPP` permite indicar el número de contacto, incluyendo el código de país y solo dígitos.
 
@@ -137,7 +140,7 @@ El QR original está en `static/assets/pago-yape-plin.png`. El lector del sistem
 
 La transferencia muestra **MARICIELO GIRAO CHACALIAZA** como titular y el CCI **00238012593976701545**, proporcionado por la propietaria. El botón «Copiar CCI» copia los veinte dígitos sin espacios. `PAYMENT_CCI` permite sustituirlo en otro entorno. Administración conserva el control de la confirmación del pago.
 
-El filtro de precios va de S/ 0 a S/ 250. Sus campos y deslizadores se sincronizan, los valores se conservan en la URL y «Limpiar filtros» restaura los límites. «Añadir al carrito» agrega una unidad con un solo clic, incluso en piezas personalizables; la personalización sigue disponible desde el detalle. El carrito no se abre automáticamente. El aviso visual aparece al iniciar una selección vacía y las unidades posteriores se acumulan, respetando stock y límites.
+El filtro de precios va de S/ 0 a S/ 250. Sus campos y deslizadores se sincronizan, los valores se conservan en la URL y «Limpiar filtros» restaura los límites. En anillos, la selección de talla US disponible (`4 (US)` a `8 (US)`, editable por stock en Admin) es obligatoria antes de agregar al carrito, incluye una guía modal de conversión de tallas en milímetros y el grabado opcional (en piezas habilitadas) acepta solo letras mayúsculas hasta 16 caracteres. La suite cuenta con 75 pruebas automatizadas en Java (JUnit/Spring Boot) con tema claro y oscuro completo en tienda y administración. El carrito no se abre automáticamente. El aviso visual aparece al iniciar una selección vacía y las unidades posteriores se acumulan, respetando stock y límites.
 
 ## Reseñas con fotografías
 

@@ -1,6 +1,9 @@
 /* Botón selector de tema (Sol en claro / Luna en oscuro): sin fondo, sin hover y área exacta al icono */
 .theme-toggle-btn,
-.admin-header-right .theme-toggle-btn{
+.theme-toggle-btn:hover,
+.theme-toggle-btn:focus-visible,
+.admin-header-right .theme-toggle-btn,
+.admin-header-right .theme-toggle-btn:hover{
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -8,15 +11,16 @@
   height:21px;
   min-width:21px;
   min-height:21px;
-  padding:0;
-  border:0;
-  border-radius:0;
-  background:transparent;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
   color:var(--ink);
   cursor:pointer;
   flex:none;
 }
-.theme-toggle-btn svg{display:block;width:21px;height:21px}
+.theme-toggle-btn svg{display:block;width:21px;height:21px;background:transparent!important}
 .access-header .theme-toggle-btn{margin-left:auto;margin-right:12px}
 
 /* Tema oscuro Cielo Joyas */
@@ -209,13 +213,13 @@ html[data-theme="dark"] .button-light:hover{
   border-color:#dfd4c7;
 }
 
-html[data-theme="dark"] .filter-btn{
+html[data-theme="dark"] .filters .filter-btn{
   border-color:var(--line);
   color:#d6cbc0;
 }
 
-html[data-theme="dark"] .filter-btn.active,
-html[data-theme="dark"] .filter-btn:hover{
+html[data-theme="dark"] .filters .filter-btn.active,
+html[data-theme="dark"] .filters .filter-btn:hover{
   background:#d3a089;
   border-color:#d3a089;
   color:#171310;
@@ -300,13 +304,37 @@ html[data-theme="dark"] .pedido-email-note{
   color:#e2c6a8;
 }
 
+html[data-theme="dark"] .payment-options{
+  background:#1b1815;
+  border-color:#3e352d;
+}
+
+html[data-theme="dark"] .payment-options label{
+  border-bottom-color:var(--line);
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .payment-options label:hover{
+  background:#231e19;
+}
+
 html[data-theme="dark"] .payment-options label:has(input:checked){
   background:#28201b;
+  box-shadow:inset 3px 0 #d3a089;
+}
+
+html[data-theme="dark"] .payment-options span{
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .payment-options small{
+  color:var(--muted);
 }
 
 html[data-theme="dark"] .card-payment-drawer{
   background:#221e1a;
-  border-color:var(--line);
+  border-color:#3e352d;
+  color:var(--ink);
 }
 
 html[data-theme="dark"] .card-drawer-badge{
@@ -366,8 +394,17 @@ html[data-theme="dark"] .price-filter-card h3{
 }
 
 html[data-theme="dark"] .drawer-categories .filter-btn{
-  border-color:var(--line);
+  background:transparent!important;
+  border-color:var(--line)!important;
+  border-radius:0;
   color:#e4dbd0;
+  padding-inline:8px;
+}
+
+html[data-theme="dark"] .drawer-categories .filter-btn:hover{
+  background:#231e19!important;
+  border-color:var(--line)!important;
+  color:#f5ead8;
 }
 
 html[data-theme="dark"] .drawer-categories .filter-btn:before{
@@ -376,10 +413,166 @@ html[data-theme="dark"] .drawer-categories .filter-btn:before{
 }
 
 html[data-theme="dark"] .drawer-categories .filter-btn.active{
+  background:transparent!important;
   color:#e6c88e;
 }
 
+html[data-theme="dark"] .drawer-categories .filter-btn.active:before{
+  background:#d9b97e;
+  border-color:#d9b97e;
+}
+
+html[data-theme="dark"] .price-filter-card,
+html[data-theme="dark"] .price-filters{
+  background:#1c1815!important;
+  border-color:var(--line)!important;
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .price-filters label{
+  color:var(--muted);
+}
+
+html[data-theme="dark"] .price-filters .button,
+html[data-theme="dark"] .filter-drawer-footer .button{
+  background:#d3a089;
+  border-color:#d3a089;
+  color:#171310;
+  font-weight:600;
+}
+
+html[data-theme="dark"] .filter-open{
+  background:#26211c;
+  border-color:#5a4838;
+  color:#e6c88e;
+}
+
+html[data-theme="dark"] .checkout-modal{
+  background:#141210;
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .checkout-layout{
+  background:#181512;
+  border-color:var(--line);
+  color:var(--ink);
+  box-shadow:0 24px 64px rgba(0,0,0,.55);
+}
+
+html[data-theme="dark"] .checkout-layout>.modal-close{
+  background:#221e1a;
+  border-color:#3e352d;
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .checkout-layout>.modal-close:hover{
+  background:#2d2620;
+  border-color:#d3a089;
+}
+
+html[data-theme="dark"] .checkout-intro{
+  border-bottom-color:var(--line);
+}
+
+html[data-theme="dark"] .checkout-intro h2,
+html[data-theme="dark"] .checkout-section h3{
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .delivery-only-note{
+  background:#221e1a;
+  border:1px solid var(--line);
+  color:var(--muted);
+}
+
+html[data-theme="dark"] .remember-delivery{
+  border-bottom-color:var(--line);
+}
+
+html[data-theme="dark"] .remember-delivery small,
+html[data-theme="dark"] .checkout-terms{
+  color:var(--muted);
+}
+
+html[data-theme="dark"] .remember-delivery button,
+html[data-theme="dark"] .checkout-terms a,
+html[data-theme="dark"] .checkout-payment-summary b{
+  color:#d3a089;
+}
+
+html[data-theme="dark"] .remember-delivery p{
+  color:#e2c6a8;
+}
+
+html[data-theme="dark"] :is(.checkout-modal,.account-information) .checkout-field input,
+html[data-theme="dark"] :is(.checkout-modal,.account-information) .checkout-field select,
+html[data-theme="dark"] .checkout-coupon input,
+html[data-theme="dark"] .product-modal-copy label input{
+  background:#1f1b18;
+  border-color:#3b332c;
+  color:var(--ink);
+}
+
+html[data-theme="dark"] :is(.checkout-modal,.account-information) .checkout-field select:disabled{
+  background:#181512;
+  color:var(--muted);
+}
+
+html[data-theme="dark"] .checkout-submit{
+  background:#d3a089;
+  border-color:#d3a089;
+  color:#171310;
+  font-weight:600;
+}
+
+html[data-theme="dark"] .checkout-submit:hover{
+  background:#e1b39e;
+  border-color:#e1b39e;
+}
+
+html[data-theme="dark"] .cielo-spinner{
+  border-color:rgba(23,19,16,.25);
+  border-top-color:#171310;
+}
+
+html[data-theme="dark"] .product-modal{
+  background:rgba(12,10,8,.76);
+}
+
+html[data-theme="dark"] .product-modal-copy{
+  background:#1c1916;
+  color:var(--ink);
+  border:1px solid var(--line);
+  box-shadow:0 24px 64px rgba(0,0,0,.55);
+}
+
+html[data-theme="dark"] .product-modal-copy h2,
+html[data-theme="dark"] .product-modal-price{
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .product-modal-copy>p:not(.product-modal-price),
+html[data-theme="dark"] .product-modal-copy label{
+  color:var(--muted);
+}
+
+html[data-theme="dark"] .product-modal-copy>a{
+  color:#e2c6a8;
+}
+
+html[data-theme="dark"] .product-modal-close{
+  background:#1e1a17;
+  border-color:#3e352d;
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .product-modal-close:hover{
+  background:#2a241f;
+  border-color:#d3a089;
+}
+
 html[data-theme="dark"] .cart-panel,
+html[data-theme="dark"] .cart-panel .cart-head,
 html[data-theme="dark"] .cart-bottom,
 html[data-theme="dark"] .modal,
 html[data-theme="dark"] .product-modal-panel,
@@ -392,6 +585,16 @@ html[data-theme="dark"] .order-modal-card,
 html[data-theme="dark"] .policy-modal{
   background:#1c1916;
   color:var(--ink);
+  border-color:var(--line);
+}
+
+html[data-theme="dark"] .checkout-summary-item img{
+  border-color:var(--line);
+  background:#26211c;
+}
+
+html[data-theme="dark"] .checkout-summary-total,
+html[data-theme="dark"] .checkout-payment-summary{
   border-color:var(--line);
 }
 
@@ -416,8 +619,10 @@ html[data-theme="dark"] .policy-close:hover{
   background:#362e27;
 }
 
-html[data-theme="dark"] .qty button{
-  border-color:#3f3730;
+html[data-theme="dark"] .qty button,
+html[data-theme="dark"] .cart-panel .qty button{
+  border:0!important;
+  background:transparent!important;
   color:var(--ink);
 }
 
@@ -445,6 +650,48 @@ html[data-theme="dark"] .pedido-status{
   background:#2f261c;
   border-color:#5a4833;
   color:#e6c79c;
+}
+
+html[data-theme="dark"] .pedido-status.is-paid{
+  background:#2d231c;
+  border-color:#6e4f3e;
+  color:#e8c7b3;
+}
+
+html[data-theme="dark"] .payment-deadline{
+  background:#2a221b;
+  border:1px solid #4a3a2c;
+  color:#e2c6a8;
+}
+
+html[data-theme="dark"] .payment-confirmed-note{
+  background:#1a1613;
+  color:#efe8df;
+  border:1px solid #3f332a;
+  border-left:3px solid #d3a089;
+}
+
+html[data-theme="dark"] .pedido-details-tabs button{
+  color:var(--muted);
+}
+
+html[data-theme="dark"] .pedido-details-tabs button[aria-selected=true]{
+  border-bottom-color:#d3a089;
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .pedido-item-pagination button{
+  background:#221e1a;
+  border-color:#3e352d;
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .pedido-dialog .icon-btn{
+  color:var(--ink);
+}
+
+html[data-theme="dark"] #copy-cci-status{
+  color:#e2c6a8;
 }
 
 /* Tarjeta flotante y tarjeta de contacto de WhatsApp */
@@ -522,6 +769,10 @@ html[data-theme="dark"] .password-control input{
 
 html[data-theme="dark"] .password-control button{
   color:var(--muted);
+}
+
+html[data-theme="dark"] .password-rules li.ok{
+  color:#e6c4b0;
 }
 
 html[data-theme="dark"] .google-auth-btn,
@@ -632,7 +883,7 @@ html[data-theme="dark"] .admin-body{
   color:var(--ink);
 }
 
-html[data-theme="dark"] .admin-header-right button,
+html[data-theme="dark"] .admin-header-right button:not(.theme-toggle-btn),
 html[data-theme="dark"] .export-button,
 html[data-theme="dark"] .row-action,
 html[data-theme="dark"] .carousel-secondary-btn{
@@ -641,7 +892,7 @@ html[data-theme="dark"] .carousel-secondary-btn{
   color:var(--ink);
 }
 
-html[data-theme="dark"] .admin-header-right button:hover,
+html[data-theme="dark"] .admin-header-right button:not(.theme-toggle-btn):hover,
 html[data-theme="dark"] .export-button:hover,
 html[data-theme="dark"] .row-action:hover,
 html[data-theme="dark"] .carousel-secondary-btn:hover{
@@ -728,6 +979,27 @@ html[data-theme="dark"] .order-status[data-order-state="cancelado"]{
   background:#331e1c;
   border-color:#633834;
   color:#ebb0a9;
+}
+
+html[data-theme="dark"] .status-pill[data-order-state="pendiente"]{
+  background:#2f261c;
+  border:1px solid #5a4833;
+  color:#e6c79c;
+}
+
+html[data-theme="dark"] .status-pill[data-order-state="pagado"],
+html[data-theme="dark"] .status-pill[data-order-state="entregado"]{
+  background:#2d231c;
+  border:1px solid #6e4f3e;
+  color:#e8c7b3;
+}
+
+html[data-theme="dark"] .edit-order-dialog .dialog-close{
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .edit-order-dialog label{
+  color:var(--muted);
 }
 
 html[data-theme="dark"] .email-pill{
@@ -818,4 +1090,99 @@ html[data-theme="dark"] .carousel-remove-btn{
 
 html[data-theme="dark"] .carousel-remove-btn:hover{
   background:#33221f;
+}
+
+/* Tallas de anillo, selector cuadrado, guía de conversión y editor admin */
+html[data-theme="dark"] .size-selector-title{
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .size-guide-btn{
+  color:#d9b97e;
+}
+
+html[data-theme="dark"] .size-guide-btn:hover{
+  color:#f0dec0;
+}
+
+html[data-theme="dark"] .size-pill-btn{
+  background:#221e1a;
+  border-color:#44392f;
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .size-pill-btn:hover{
+  background:#2c251f;
+  border-color:#d3a089;
+}
+
+html[data-theme="dark"] .size-pill-btn[aria-pressed="true"]{
+  background:#d3a089;
+  border-color:#d3a089;
+  color:#171310;
+}
+
+html[data-theme="dark"] .size-stock-info,
+html[data-theme="dark"] .engraving-counter{
+  color:var(--muted);
+}
+
+html[data-theme="dark"] .size-guide-modal{
+  background:rgba(12,10,8,.76);
+}
+
+html[data-theme="dark"] .size-guide-card{
+  background:#1c1916;
+  border-color:var(--line);
+  color:var(--ink);
+  box-shadow:0 24px 80px rgba(0,0,0,.6);
+}
+
+html[data-theme="dark"] .size-guide-close{
+  background:#24201c;
+  border-color:#3e352d;
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .size-guide-close:hover{
+  background:#302923;
+  border-color:#d3a089;
+}
+
+html[data-theme="dark"] .size-guide-table th{
+  border-bottom-color:var(--line);
+}
+
+html[data-theme="dark"] .size-guide-table th span{
+  background:transparent;
+  border:0;
+  color:#e2c6a8;
+}
+
+html[data-theme="dark"] .size-guide-table td{
+  border-bottom-color:var(--line);
+  color:var(--ink);
+}
+
+html[data-theme="dark"] .size-guide-table td b{
+  color:#d3a089;
+}
+
+html[data-theme="dark"] .product-sizes-editor{
+  background:#221e1a;
+  border-color:var(--line);
+}
+
+html[data-theme="dark"] .theme-toggle-btn,
+html[data-theme="dark"] .theme-toggle-btn:hover,
+html[data-theme="dark"] .theme-toggle-btn:focus-visible,
+html[data-theme="dark"] .admin-header-right .theme-toggle-btn,
+html[data-theme="dark"] .admin-header-right .theme-toggle-btn:hover,
+html[data-theme="dark"] .header-actions .theme-toggle-btn,
+html[data-theme="dark"] .header-actions .theme-toggle-btn:hover{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  color:var(--ink)!important;
 }

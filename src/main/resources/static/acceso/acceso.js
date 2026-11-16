@@ -198,8 +198,7 @@
     let message='';const value=input.value;
     if(input.required&&!value.trim())message='Completa este campo.';
     else if(input.type==='email'&&value&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim()))message='Ingresa un correo electrónico válido.';
-    else if(input.name==='password'&&mode==='recovery')message=passwordChecklist(value);
-    else if(input.name==='password'&&mode!=='login'&&value.length<8)message='Usa al menos 8 caracteres.';
+    else if(input.name==='password'&&mode!=='login')message=passwordChecklist(value);
     else if(input.name==='passwordConfirmation'&&value!==form.elements.password.value)message='Las contraseñas deben coincidir.';
     else if(input.name==='phone'&&value&&!/^9\d{8}$/.test(value))message='Ingresa 9 dígitos que empiecen por 9.';
     else if(['firstName','lastName'].includes(input.name)&&value.trim().length<2)message='Ingresa al menos 2 caracteres.';
@@ -216,7 +215,7 @@
     if(!event.relatedTarget?.closest('button[type="submit"]'))validate(input);
   }));
   controls.forEach(input=>input.addEventListener('input',()=>{
-    if(mode==='recovery'&&input.name==='password')passwordChecklist(input.value);
+    if(mode!=='login'&&input.name==='password')passwordChecklist(input.value);
     if(input.getAttribute('aria-invalid')==='true')validate(input);
     if(input.name==='password'&&form.elements.passwordConfirmation?.getAttribute('aria-invalid')==='true')validate(form.elements.passwordConfirmation);
   }));

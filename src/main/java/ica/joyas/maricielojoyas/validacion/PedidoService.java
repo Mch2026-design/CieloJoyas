@@ -27,6 +27,7 @@ public class PedidoService {
     private final CompraRepository compras;
     private final ProveedorRepository proveedores;
     private final Ubigeos ubigeos;
+    @Autowired(required = false) private ProductoTallaRepository productoTallas;
     @Autowired(required = false) private MercadoPagoService mercadoPago;
     @PersistenceContext private EntityManager entityManager;
 
@@ -121,6 +122,7 @@ public class PedidoService {
             throw error("El pago con Tarjeta / Mercado Pago aún no está habilitado. Elige Yape, Plin o transferencia.");
         }
         BigDecimal subtotal = BigDecimal.ZERO;
+        Map<String, Integer> cantidadesPorTalla = new TreeMap<>();
         List<DetallePedido> items = new ArrayList<>();
         for (var linea : lineas) {
             Producto producto = catalogo.get(id(linea.get("productId")));
@@ -129,12 +131,42 @@ public class PedidoService {
             detalle.setImagenUrl(producto.getImagenUrl()); detalle.setCantidad(entero(linea, "quantity", 1, 100));
             detalle.setPrecioUnitario(producto.getPrecio());
             detalle.setImporte(producto.getPrecio().multiply(BigDecimal.valueOf(detalle.getCantidad())));
-            String grabado = texto(linea, "engraving", 0, 20), talla = texto(linea, "size", 0, 30);
-            if (!producto.getPersonalizable() && (!grabado.isBlank() || !talla.isBlank()))
-                throw error(producto.getNombre() + " no admite personalización.");
+            String grabado = texto(linea, "engraving", 0, 16), talla = texto(linea, "size", 0, 10);
+            boolean esAnillo = producto.getCategoria() != null && producto.getCategoria().getNombre() != null
+                    && "anillos".equalsIgnoreCase(producto.getCategoria().getNombre().trim());
+            boolean requiereTalla = esAnillo || Boolean.TRUE.equals(producto.getRequiereTalla());
+            boolean admiteGrabado = Boolean.TRUE.equals(producto.getAdmiteGrabado());
+            if (requiereTalla && talla.isBlank())
+                throw error("Elige una talla disponible para " + producto.getNombre() + ".");
+            if (!talla.isBlank()) {
+                if (!requiereTalla)
+                    throw error(producto.getNombre() + " no admite talla.");
+                if (!talla.matches("[0-9]{1,2}(?:\\.[0-9])?"))
+                    throw error("La talla de " + producto.getNombre() + " debe ser numérica.");
+                cantidadesPorTalla.merge(producto.getId() + "#" + talla, detalle.getCantidad(), Integer::sum);
+            }
+            if (!grabado.isBlank()) {
+                if (!admiteGrabado)
+                    throw error(producto.getNombre() + " no admite grabado.");
+                if (!grabado.matches("[A-ZÁÉÍÓÚÜÑ]+(?: [A-ZÁÉÍÓÚÜÑ]+)*"))
+                    throw error("El grabado de " + producto.getNombre() + " solo admite letras mayúsculas (máximo 16 caracteres).");
+            }
             detalle.setGrabado(nulo(grabado)); detalle.setTalla(nulo(talla));
             detalle.setColor(nulo(texto(linea, "color", 0, 50)));
             items.add(detalle); subtotal = subtotal.add(detalle.getImporte());
+        }
+        if (productoTallas != null && !cantidadesPorTalla.isEmpty()) {
+            for (var entry : cantidadesPorTalla.entrySet()) {
+                String[] parts = entry.getKey().split("#", 2);
+                long prodId = Long.parseLong(parts[0]);
+                String talla = parts[1];
+                Producto p = catalogo.get(prodId);
+                ProductoTalla pt = productoTallas.findByProductoId(prodId).stream()
+                        .filter(t -> talla.equals(t.getTalla())).findFirst().orElse(null);
+                if (pt == null || entry.getValue() > pt.getStock()) {
+                    throw error("No hay suficientes unidades de " + p.getNombre() + " en talla " + talla + " (US).");
+                }
+            }
         }
         pedido.setSubtotal(dinero(subtotal));
         String codigo = texto(datos, "coupon", 0, 20);
@@ -169,8 +201,31 @@ public class PedidoService {
         Pago pago = pagos.findByPedidoId(id).orElseThrow();
         if (nuevo.equals("pagado") || (nuevo.equals("cancelado") && pago.getEstado().equals("confirmado"))) {
             Map<Long, Integer> cantidades = new TreeMap<>();
-            for (DetallePedido detalle : detalles.findByPedidoIdOrderById(id))
+            Map<String, Integer> cantidadesTalla = new TreeMap<>();
+            for (DetallePedido detalle : detalles.findByPedidoIdOrderById(id)) {
                 cantidades.merge(detalle.getProducto().getId(), detalle.getCantidad(), Integer::sum);
+                if (detalle.getTalla() != null && !detalle.getTalla().isBlank()) {
+                    cantidadesTalla.merge(detalle.getProducto().getId() + "#" + detalle.getTalla(), detalle.getCantidad(), Integer::sum);
+                }
+            }
+            if (productoTallas != null && !cantidadesTalla.isEmpty()) {
+                for (var entry : cantidadesTalla.entrySet()) {
+                    String[] parts = entry.getKey().split("#", 2);
+                    long prodId = Long.parseLong(parts[0]);
+                    String talla = parts[1];
+                    productoTallas.bloquearPorProductoYTalla(prodId, talla).ifPresent(pt -> {
+                        if (nuevo.equals("pagado")) {
+                            if (pt.getStock() < entry.getValue())
+                                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                                        "Stock insuficiente de talla " + talla + " (US). No se confirmó el pago.");
+                            pt.setStock(pt.getStock() - entry.getValue());
+                        } else {
+                            pt.setStock(Math.addExact(pt.getStock(), entry.getValue()));
+                        }
+                        productoTallas.save(pt);
+                    });
+                }
+            }
             for (var linea : cantidades.entrySet()) {
                 Producto producto = productos.bloquearPorId(linea.getKey()).orElseThrow();
                 // El detalle pudo cargar el producto antes de esperar el bloqueo.

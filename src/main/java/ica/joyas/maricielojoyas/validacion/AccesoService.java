@@ -88,7 +88,7 @@ public class AccesoService {
         if (usuarios.findByEmailIgnoreCase(correo).isPresent()) throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe una cuenta con este correo. Inicia sesión.");
         String nombres = texto(datos, "firstName", 2, 50), apellidos = texto(datos, "lastName", 2, 49);
         String clave = password(datos);
-        if (clave.length() < 8) throw error("La contraseña debe tener al menos 8 caracteres.");
+        validarPasswordSegura(clave);
         if ((administrador || datos.containsKey("passwordConfirmation")) && !clave.equals(datos.get("passwordConfirmation"))) throw error("Las contraseñas deben coincidir.");
         String telefono = texto(datos, "phone", 0, 9);
         if (!telefono.isBlank() && !telefono.matches("9[0-9]{8}")) throw error("El celular debe tener 9 dígitos y empezar por 9.");
