@@ -266,9 +266,15 @@ $('#checkout-apply-coupon').addEventListener('click',e=>applyCoupon($('#checkout
 function updateSummary(){
   $('#checkout-summary-items').innerHTML=cart.map(line=>{const p=productOf(line);return p?`<div class="checkout-summary-item"><img src="${esc(p.src)}" alt="${esc(p.alt)}" width="64" height="80"><span>${esc(p.name)}<small>Cantidad: ${line.quantity}${line.engraving?` · Grabado: ${esc(line.engraving)}`:''}${line.size?` · Talla: ${esc(line.size)}`:''}</small></span><b>${money(p.price*line.quantity)}</b></div>`:'';}).join('');
   const method=$('#checkout-form').elements.paymentMethod.value;
-  $('#checkout-selected-payment').textContent=({yape:'Yape',plin:'Plin',transferencia:'Transferencia bancaria',tarjeta:'Tarjeta'})[method]||'Selecciona un medio';
+  $('#checkout-selected-payment').textContent=({yape:'Yape',plin:'Plin',transferencia:'Transferencia bancaria',tarjeta:'Tarjeta / Mercado Pago (sin habilitar)'})[method]||'Selecciona un medio';
+  const cardDrawer=$('#card-payment-drawer');
+  if(cardDrawer)cardDrawer.hidden=method!=='tarjeta';
   $('#checkout-subtotal').textContent=money(subtotal());$('#checkout-discount').textContent=money(discount());$('#checkout-total').textContent=money(subtotal()-discount());$('#checkout-button-total').textContent=money(subtotal()-discount());
 }
+let mpConfig={enabled:false,sandbox:true,publicKey:''};
+api('/payments/mercadopago/config').then(c=>{if(c)mpConfig=c;}).catch(()=>{});
+$('#mp-card-number')?.addEventListener('input',e=>{const digits=e.target.value.replace(/\D/g,'').slice(0,16);e.target.value=digits.replace(/(.{4})/g,'$1 ').trim();});
+$('#mp-card-expiry')?.addEventListener('input',e=>{const digits=e.target.value.replace(/\D/g,'').slice(0,4);e.target.value=digits.length>2?digits.slice(0,2)+'/'+digits.slice(2):digits;});
 $('#checkout').addEventListener('click',async()=>{try{if(!await verifyCartOwner())return;}catch(error){notify(error.message);return;}if(!cart.length)return;if(cartOwner==='guest'){const nextUrl=new URL(location.href);nextUrl.searchParams.set('checkout','1');const nextRel=nextUrl.pathname+nextUrl.search;location.assign('/acceso/login.html?next='+encodeURIComponent(nextRel));return;}hide($('#cart-panel'));$('#checkout-error').textContent='';$('#checkout-coupon-message').textContent='';$('#checkout-coupon').value=coupon?.code||'';updateSummary();await restoreDelivery();if(cartAvailable())show($('#checkout-modal'));});
 $('#checkout-form').addEventListener('change',e=>{if(e.target.name==='paymentMethod')updateSummary();});
 $('#checkout-form').addEventListener('submit',async e=>{
@@ -279,6 +285,7 @@ $('#checkout-form').addEventListener('submit',async e=>{
   if(submittingOrder)return;
   if(!CieloControls.validate(form))return;
   const d=Object.fromEntries(new FormData(form)),button=form.querySelector('[type="submit"]');
+  if(d.paymentMethod==='tarjeta'&&!mpConfig.enabled){$('#checkout-error').textContent='El pago con Tarjeta / Mercado Pago aún no está habilitado. Selecciona Yape, Plin o Transferencia bancaria para confirmar tu pedido.';$('#checkout-error').focus();return;}
   $('#checkout-error').textContent='';submittingOrder=true;
   const fields=[...form.elements,...document.querySelectorAll('#close-checkout,#checkout-apply-coupon')].filter(el=>el!==button);
   const states=fields.map(el=>[el,el.disabled]);

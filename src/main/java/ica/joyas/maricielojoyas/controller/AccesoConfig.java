@@ -74,7 +74,8 @@ public class AccesoConfig implements WebMvcConfigurer {
                         if (ruta.startsWith("/api/admin/") && !usuario.getRol().equals("ADMIN"))
                             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Esta sección corresponde a la administración de la tienda.");
                     }
-                    if (!Set.of("GET", "HEAD", "OPTIONS").contains(request.getMethod())) {
+                    if (!ruta.equals("/api/payments/mercadopago/webhook")
+                            && !Set.of("GET", "HEAD", "OPTIONS").contains(request.getMethod())) {
                         HttpSession sesion = request.getSession(false);
                         String esperado = sesion == null ? null : (String) sesion.getAttribute("csrf");
                         if (esperado == null || !esperado.equals(request.getHeader("X-CSRF-Token")))

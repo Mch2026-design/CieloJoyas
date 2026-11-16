@@ -304,6 +304,16 @@ html[data-theme="dark"] .payment-options label:has(input:checked){
   background:#28201b;
 }
 
+html[data-theme="dark"] .card-payment-drawer{
+  background:#221e1a;
+  border-color:var(--line);
+}
+
+html[data-theme="dark"] .card-drawer-badge{
+  background:#322821;
+  color:#e2c6a8;
+}
+
 html[data-theme="dark"] .cielo-tooltip{
   background:#2a241f;
   color:#efe8df;

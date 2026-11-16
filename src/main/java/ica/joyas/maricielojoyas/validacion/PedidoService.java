@@ -27,6 +27,7 @@ public class PedidoService {
     private final CompraRepository compras;
     private final ProveedorRepository proveedores;
     private final Ubigeos ubigeos;
+    @Autowired(required = false) private MercadoPagoService mercadoPago;
     @PersistenceContext private EntityManager entityManager;
 
     @Autowired
@@ -116,7 +117,9 @@ public class PedidoService {
         pedido.setCodigoPostal(nulo(postal));
         pedido.setMensajeRegalo(nulo(texto(datos, "giftMessage", 0, 180)));
         String metodo = opcion(datos, "paymentMethod", Set.of("yape", "plin", "transferencia", "tarjeta"));
-        if (metodo.equals("tarjeta")) throw error("El pago con tarjeta aún no está habilitado. Elige Yape, Plin o transferencia.");
+        if (metodo.equals("tarjeta") && (mercadoPago == null || !mercadoPago.isEnabled())) {
+            throw error("El pago con Tarjeta / Mercado Pago aún no está habilitado. Elige Yape, Plin o transferencia.");
+        }
         BigDecimal subtotal = BigDecimal.ZERO;
         List<DetallePedido> items = new ArrayList<>();
         for (var linea : lineas) {
